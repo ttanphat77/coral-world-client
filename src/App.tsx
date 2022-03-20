@@ -1,14 +1,17 @@
 import * as React from "react"
 import Header from "./components/header"
 import Home from "./pages/home"
+import Taxonomy from "./pages/taxonomy"
 import {Routes, BrowserRouter, Route, Outlet} from "react-router-dom";
-import { Container } from "@chakra-ui/react"
 
 export const App = () => (
-    <BrowserRouter>
+    <BrowserRouter
+        basename={process.env.PUBLIC_URL}
+    >
         <Routes>
             <Route path='/' element={<Layout/>}>
                 <Route index element={<Home/>}/>
+                <Route path='/taxonomy' element={<Taxonomy/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
