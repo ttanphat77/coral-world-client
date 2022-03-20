@@ -2,10 +2,10 @@ import * as React from "react"
 import Header from "./components/header"
 import Home from "./pages/home"
 import Taxonomy from "./pages/taxonomy"
-import {Routes, BrowserRouter, Route, Outlet, HashRouter} from "react-router-dom";
+import {Routes, BrowserRouter, Route, Outlet} from "react-router-dom";
 
 export const App = () => (
-    <HashRouter
+    <BrowserRouter
         // basename={process.env.PUBLIC_URL}
     >
         <Routes>
@@ -14,7 +14,7 @@ export const App = () => (
                 <Route path='/taxonomy' element={<Taxonomy/>}/>
             </Route>
         </Routes>
-    </HashRouter>
+    </BrowserRouter>
 )
 
 function Layout() {
