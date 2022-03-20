@@ -11,7 +11,7 @@ export const App = () => (
         <Routes>
             <Route path='/' element={<Layout/>}>
                 <Route index element={<Home/>}/>
-                {/*<Route path='/taxonomy' element={<Taxonomy/>}/>*/}
+                <Route path='/taxonomy' element={<Taxonomy/>}/>
             </Route>
         </Routes>
     </BrowserRouter>

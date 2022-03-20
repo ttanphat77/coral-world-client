@@ -49,7 +49,7 @@ export default function Taxonomy() {
                        </Stack>
                     </FormControl>
                 </Box>
-                {searchValue == '' &&
+                {searchValue === '' &&
                 <Box>
                     <SimpleGrid columns={[1, 1, 3]} spacing={8}>
                         <Accordion allowMultiple allowToggle>
