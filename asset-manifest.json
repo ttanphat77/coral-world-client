@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/coral-world-client/static/js/main.5410007c.js",
+    "main.js": "/coral-world-client/static/js/main.90ff2ec0.js",
     "static/js/377.8d397224.chunk.js": "/coral-world-client/static/js/377.8d397224.chunk.js",
     "static/media/coral-trimmy.png": "/coral-world-client/static/media/coral-trimmy.b84e4f09ca7ea67671ff.png",
     "index.html": "/coral-world-client/index.html",
-    "main.5410007c.js.map": "/coral-world-client/static/js/main.5410007c.js.map",
+    "main.90ff2ec0.js.map": "/coral-world-client/static/js/main.90ff2ec0.js.map",
     "377.8d397224.chunk.js.map": "/coral-world-client/static/js/377.8d397224.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.5410007c.js"
+    "static/js/main.90ff2ec0.js"
   ]
 }
