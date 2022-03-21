@@ -10,10 +10,10 @@ export const App = () => (
         // basename={process.env.PUBLIC_URL}
     >
         <Routes>
-            <Route path='/' element={<Layout/>}>
-                <Route index element={<Home/>}/>
-                {/*<Route path='/taxonomy' element={<Taxonomy/>}/>*/}
-                {/*<Route path='/about' element={<About/>}/>                                                                                                                                                       */}
+            <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/taxonomy" element={<Taxonomy />} />
+                <Route path="/about" element={<About />} />
             </Route>
         </Routes>
     </BrowserRouter>
