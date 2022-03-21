@@ -2611,6 +2611,11 @@ export default function Taxonomy() {
                     </SimpleGrid>
                 </Box>
                 }
+
+                {searchValue !== '' &&
+                <Box>
+                </Box>
+                }
             </Stack>
         </Container>
     );
