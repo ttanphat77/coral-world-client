@@ -13,7 +13,7 @@ export const App = () => (
             <Route element={<Layout/>}>
                 <Route path='/' element={<Home/>}/>
                 {/*<Route path='/taxonomy' element={<Taxonomy/>}/>*/}
-                <Route path='/about' element={<About/>}/>                                                                                                                                                       
+                {/*<Route path='/about' element={<About/>}/>                                                                                                                                                       */}
             </Route>
         </Routes>
     </BrowserRouter>
