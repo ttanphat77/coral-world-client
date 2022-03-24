@@ -17,10 +17,14 @@ import {
   SpaceProps,
   Tag, Container, FormControl, FormLabel, Input, FormHelperText, InputGroup, InputLeftElement,
 } from '@chakra-ui/react';
-import {PhoneIcon, SearchIcon} from "@chakra-ui/icons";
+import { SearchIcon} from "@chakra-ui/icons";
+import 'leaflet/dist/leaflet.css';
+import GoogleMapReact from 'google-map-react';
 
 export default function Home() {
-  return (<> <Flex
+  return (
+      <>
+        <Flex
           w={'full'}
           // h={'100vh'}
           backgroundImage={
@@ -71,7 +75,22 @@ export default function Home() {
           </Stack>
         </VStack>
       </Flex>
-        <Container maxW={'8xl'} p={8}>
+        <Container maxW={'4xl'} p={4} height={'500px'}>
+          <CoralMap/>
+          {/*<MapContainer center={[16.52871826394193, 109.61066054969723]} zoom={5}*/}
+          {/*              style={{ height: '400px' }}>*/}
+          {/*  <TileLayer*/}
+          {/*      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'*/}
+          {/*      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"*/}
+          {/*  />*/}
+          {/*  <Marker position={[51.505, -0.09]}>*/}
+          {/*    <Popup>*/}
+          {/*      A pretty CSS3 popup. <br /> Easily customizable.*/}
+          {/*    </Popup>*/}
+          {/*  </Marker>*/}
+          {/*</MapContainer>*/}
+        </Container>
+        <Container maxW={'8xl'} p={4}>
           <Heading as="h2" marginTop="5">
             Latest articles
           </Heading>
@@ -225,6 +244,25 @@ const BlogTags: React.FC<IBlogTags> = (props) => {
           );
         })}
       </HStack>
+  );
+};
+
+const CoralMap = () => {
+  var MAP_OPTIONS = {
+    scrollwheel: true,
+  }
+  return (
+      <GoogleMapReact
+          options={MAP_OPTIONS}
+          bootstrapURLKeys={{
+            key: "AIzaSyC4CIhAXSoq2aT7WdhHKcr6NHmEsuxnnyw",
+            language: "en",
+            region: "VN"
+          }}
+          defaultCenter={{ lat: 16.32, lng: 111.72 }}
+          defaultZoom={5}
+      >
+      </GoogleMapReact>
   );
 };
 

@@ -22,6 +22,7 @@ import {
     ChevronRightIcon,
 } from '@chakra-ui/icons';
 import logo from '../assets/coral-trimmy.png';
+import { Link as RouterLink} from 'react-router-dom';
 
 export default function Header() {
     const { isOpen, onToggle } = useDisclosure();
@@ -106,8 +107,9 @@ const DesktopNav = () => {
                     <Popover trigger={'hover'} placement={'bottom-start'}>
                         <PopoverTrigger>
                             <Link
+                                as={RouterLink}
+                                to={navItem.href ?? '#'}
                                 p={2}
-                                href={navItem.href ?? '#'}
                                 fontSize={'sm'}
                                 fontWeight={500}
                                 color={linkColor}
@@ -146,7 +148,8 @@ const DesktopNav = () => {
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
     return (
         <Link
-            href={href}
+            as={RouterLink}
+            to={href ?? '#'}
             role={'group'}
             display={'block'}
             p={2}
@@ -230,7 +233,9 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                     align={'start'}>
                     {children &&
                     children.map((child) => (
-                        <Link key={child.label} py={2} href={child.href}>
+                        <Link key={child.label} py={2}
+                              as={RouterLink}
+                              to={child.href ?? '#'}>
                             {child.label}
                         </Link>
                     ))}
