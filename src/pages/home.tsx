@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon} from "@chakra-ui/icons";
 import 'leaflet/dist/leaflet.css';
-import GoogleMapReact from 'google-map-react';
+import CoralMap from "../components/coralMap";
 
 export default function Home() {
   return (
@@ -244,25 +244,6 @@ const BlogTags: React.FC<IBlogTags> = (props) => {
           );
         })}
       </HStack>
-  );
-};
-
-const CoralMap = () => {
-  var MAP_OPTIONS = {
-    scrollwheel: true,
-  }
-  return (
-      <GoogleMapReact
-          options={MAP_OPTIONS}
-          bootstrapURLKeys={{
-            key: "AIzaSyC4CIhAXSoq2aT7WdhHKcr6NHmEsuxnnyw",
-            language: "en",
-            region: "VN"
-          }}
-          defaultCenter={{ lat: 16.32, lng: 111.72 }}
-          defaultZoom={5}
-      >
-      </GoogleMapReact>
   );
 };
 
