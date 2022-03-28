@@ -67,7 +67,8 @@ export default function Header() {
                         <DesktopNav />
                     </Flex>
                     <Button
-                        as={'a'}
+                        as={RouterLink}
+                        to={'/signin'}
                         fontSize={'sm'}
                         fontWeight={400}
                         color={'white'}
@@ -75,6 +76,8 @@ export default function Header() {
                         Sign In
                     </Button>
                     <Button
+                        as={RouterLink}
+                        to={'/signup'}
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'sm'}
                         fontWeight={600}
