@@ -12,8 +12,14 @@ import {
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
+import {useAuth} from "../../hooks/useAuth";
+import React from "react";
 
 export default function Signin() {
+    const auth = useAuth();
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+
     return (
         <Flex
             align={'center'}
@@ -30,23 +36,24 @@ export default function Signin() {
                     <Stack spacing={4}>
                         <FormControl id="email">
                             <FormLabel>Email address</FormLabel>
-                            <Input type="email" />
+                            <Input type="email" value={email} onChange={e=>setEmail(e.target.value)}/>
                         </FormControl>
                         <FormControl id="password">
                             <FormLabel>Password</FormLabel>
-                            <Input type="password" />
+                            <Input type="password" value={password} onChange={e=>setPassword(e.target.value)}/>
                         </FormControl>
                         <Stack spacing={10}>
-                            <Stack
-                                direction={{ base: 'column', sm: 'row' }}
-                                align={'start'}
-                                justify={'space-between'}>
-                                {/*<Checkbox>Remember me</Checkbox>*/}
-                                <Link color={'blue.400'}>Forgot password?</Link>
-                            </Stack>
+                            {/*<Stack*/}
+                            {/*    direction={{ base: 'column', sm: 'row' }}*/}
+                            {/*    align={'start'}*/}
+                            {/*    justify={'space-between'}>*/}
+                            {/*    /!*<Checkbox>Remember me</Checkbox>*!/*/}
+                            {/*    <Link color={'blue.400'}>Forgot password?</Link>*/}
+                            {/*</Stack>*/}
                             <Button
                                 bg={'blue.400'}
                                 color={'white'}
+                                onClick={() => auth.signin(email, password)}
                                 _hover={{
                                     bg: 'blue.500',
                                 }}>

@@ -6,11 +6,13 @@ import About from "./pages/about";
 import {Routes, BrowserRouter, Route, Outlet} from "react-router-dom";
 import Signin from "./pages/authenticate/signin";
 import Signup from "./pages/authenticate/signup";
+import {AuthProvider} from "./hooks/useAuth";
 
 export const App = () => (
     <BrowserRouter
         // basename={process.env.PUBLIC_URL}
     >
+        <AuthProvider>
         <Routes>
             <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
@@ -20,6 +22,7 @@ export const App = () => (
                 <Route path="/signup" element={<Signup />} />
             </Route>
         </Routes>
+        </AuthProvider>
     </BrowserRouter>
 )
 
