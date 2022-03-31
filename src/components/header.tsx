@@ -13,6 +13,13 @@ import {
     PopoverTrigger,
     PopoverContent,
     useBreakpointValue,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    MenuDivider,
+    Avatar,
+    Center,
     useDisclosure,
 } from '@chakra-ui/react';
 import {
@@ -22,10 +29,10 @@ import {
     ChevronRightIcon,
 } from '@chakra-ui/icons';
 import logo from '../assets/coral-trimmy.png';
-import { Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 
 export default function Header() {
-    const { isOpen, onToggle } = useDisclosure();
+    const {isOpen, onToggle} = useDisclosure();
 
     return (
         <Box>
@@ -33,66 +40,104 @@ export default function Header() {
                 bg={'#005A80'}
                 color={'white'}
                 minH={'60px'}
-                py={{ base: 2 }}
-                px={{ base: 4 }}
+                py={{base: 2}}
+                px={{base: 4}}
                 align={'center'}
                 position={'fixed'}
                 zIndex={1}
                 width={'100%'}>
                 <Flex
-                    flex={{ base: 1, md: 'auto' }}
-                    ml={{ base: -2 }}
-                    display={{ base: 'flex', md: 'none' }}>
+                    flex={{base: 1, md: 'auto'}}
+                    ml={{base: -2}}
+                    display={{base: 'flex', md: 'none'}}>
                     <IconButton
                         onClick={onToggle}
                         icon={
-                            isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
+                            isOpen ? <CloseIcon w={3} h={3}/> : <HamburgerIcon w={5} h={5}/>
                         }
                         variant={'ghost'}
                         aria-label={'Toggle Navigation'}
                     />
                 </Flex>
-                <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+                <Flex flex={{base: 1}} justify={{base: 'center', md: 'start'}}>
                     <Image
                         src={logo}
                         height={'60px'}/>
                 </Flex>
 
                 <Stack
-                    flex={{ base: 1, md: 0 }}
+                    flex={{base: 1, md: 0}}
                     justify={'flex-end'}
                     direction={'row'}
                     spacing={6}>
-                    <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-                        <DesktopNav />
+                    <Flex display={{base: 'none', md: 'flex'}} ml={10}>
+                        <DesktopNav/>
                     </Flex>
-                    <Button
-                        as={RouterLink}
-                        to={'/signin'}
-                        fontSize={'sm'}
-                        fontWeight={400}
-                        color={'white'}
-                        variant={'link'}>
-                        Sign In
-                    </Button>
-                    <Button
-                        as={RouterLink}
-                        to={'/signup'}
-                        display={{ base: 'none', md: 'inline-flex' }}
-                        fontSize={'sm'}
-                        fontWeight={600}
-                        color={'white'}
-                        bg={'#FFA57F'}
-                        _hover={{
-                            bg: '#E69E7F',
-                        }}>
-                        Sign Up
-                    </Button>
+                    <Menu>
+                        <MenuButton
+                            as={Button}
+                            rounded={'full'}
+                            variant={'link'}
+                            cursor={'pointer'}
+                            minW={0}
+                        >
+                            <Avatar
+                                size={'sm'}
+                                src={
+                                    'https://avatars.dicebear.com/api/male/username.svg'
+                                }
+                            />
+                        </MenuButton>
+                        <MenuList bg={'#005A80'}>
+
+                            <br/>
+                            <Center>
+                                <Avatar
+                                    size={'2xl'}
+                                    src={'https://avatars.dicebear.com/api/male/username.svg'}
+                                />
+                            </Center>
+                            <br/>
+                            <Center>
+                                <p>Username</p>
+                            </Center>
+                            <br/>
+                            <MenuDivider/>
+                            <MenuItem
+                                _focus={{bg: '#337B99'}}>Your Servers</MenuItem>
+                            <MenuItem
+                                _focus={{bg: '#337B99'}}>Account Settings</MenuItem>
+                            <MenuItem
+                                _focus={{bg: '#337B99'}}>Logout</MenuItem>
+                        </MenuList>
+                    </Menu>
+                    {/*<Button*/}
+                    {/*    as={RouterLink}*/}
+                    {/*    to={'/signin'}*/}
+                    {/*    fontSize={'sm'}*/}
+                    {/*    fontWeight={400}*/}
+                    {/*    color={'white'}*/}
+                    {/*    variant={'link'}>*/}
+                    {/*    Sign In*/}
+                    {/*</Button>*/}
+                    {/*<Button*/}
+                    {/*    as={RouterLink}*/}
+                    {/*    to={'/signup'}*/}
+                    {/*    display={{ base: 'none', md: 'inline-flex' }}*/}
+                    {/*    fontSize={'sm'}*/}
+                    {/*    fontWeight={600}*/}
+                    {/*    color={'white'}*/}
+                    {/*    bg={'#FFA57F'}*/}
+                    {/*    _hover={{*/}
+                    {/*        bg: '#E69E7F',*/}
+                    {/*    }}>*/}
+                    {/*    Sign Up*/}
+                    {/*</Button>*/}
                 </Stack>
             </Flex>
 
             <Collapse in={isOpen} animateOpacity>
-                <MobileNav />
+                <MobileNav/>
             </Collapse>
         </Box>
     );
@@ -148,7 +193,7 @@ const DesktopNav = () => {
     );
 };
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({label, href, subLabel}: NavItem) => {
     return (
         <Link
             as={RouterLink}
@@ -157,12 +202,12 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
             display={'block'}
             p={2}
             rounded={'md'}
-            _hover={{ bg: 'gray.900' }}>
+            _hover={{bg: 'gray.900'}}>
             <Stack direction={'row'} align={'center'}>
                 <Box>
                     <Text
                         transition={'all .3s ease'}
-                        _groupHover={{ color: 'pink.400' }}
+                        _groupHover={{color: 'pink.400'}}
                         fontWeight={500}>
                         {label}
                     </Text>
@@ -172,11 +217,11 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
                     transition={'all .3s ease'}
                     transform={'translateX(-10px)'}
                     opacity={0}
-                    _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
+                    _groupHover={{opacity: '100%', transform: 'translateX(0)'}}
                     justify={'flex-end'}
                     align={'center'}
                     flex={1}>
-                    <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon} />
+                    <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon}/>
                 </Flex>
             </Stack>
         </Link>
@@ -188,7 +233,7 @@ const MobileNav = () => {
         <Stack
             bg={'gray.800'}
             p={4}
-            display={{ md: 'none' }}>
+            display={{md: 'none'}}>
             {NAV_ITEMS.map((navItem) => (
                 <MobileNavItem key={navItem.label} {...navItem} />
             ))}
@@ -196,8 +241,8 @@ const MobileNav = () => {
     );
 };
 
-const MobileNavItem = ({ label, children, href }: NavItem) => {
-    const { isOpen, onToggle } = useDisclosure();
+const MobileNavItem = ({label, children, href}: NavItem) => {
+    const {isOpen, onToggle} = useDisclosure();
 
     return (
         <Stack spacing={4} onClick={children && onToggle}>
@@ -226,7 +271,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                 )}
             </Flex>
 
-            <Collapse in={isOpen} animateOpacity style={{ marginTop: '0!important' }}>
+            <Collapse in={isOpen} animateOpacity style={{marginTop: '0!important'}}>
                 <Stack
                     mt={2}
                     pl={4}
@@ -235,13 +280,13 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                     borderColor={'gray.700'}
                     align={'start'}>
                     {children &&
-                    children.map((child) => (
-                        <Link key={child.label} py={2}
-                              as={RouterLink}
-                              to={child.href ?? '#'}>
-                            {child.label}
-                        </Link>
-                    ))}
+                        children.map((child) => (
+                            <Link key={child.label} py={2}
+                                  as={RouterLink}
+                                  to={child.href ?? '#'}>
+                                {child.label}
+                            </Link>
+                        ))}
                 </Stack>
             </Collapse>
         </Stack>
