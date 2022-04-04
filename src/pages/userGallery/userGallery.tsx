@@ -3,24 +3,25 @@ import {
     Button,
     Container, FormControl, FormErrorMessage, FormLabel,
     Heading,
+    HStack,
     IconButton, Input, Link,
     Modal, ModalBody, ModalCloseButton,
     ModalContent, ModalFooter, ModalHeader,
     ModalOverlay, Select, Stack,
     useDisclosure
 } from "@chakra-ui/react";
-import {AddIcon, EditIcon} from "@chakra-ui/icons";
+import {AddIcon, DeleteIcon, EditIcon} from "@chakra-ui/icons";
 import {Table, Thead, Tbody, Tr, Th, Td, chakra} from '@chakra-ui/react'
 import {TriangleDownIcon, TriangleUpIcon} from '@chakra-ui/icons'
 import {useTable, useSortBy} from 'react-table'
 import {useFormik} from "formik";
-import {Link as RouterLink, useNavigate } from "react-router-dom";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
 
 export default function UserGallery() {
     return (
         <Container maxW={"container.xl"} p={8}>
             <Heading as='h2' size='xl'>
-                My Gallery <AlbumModal />
+                My Gallery <AlbumForm/>
             </Heading>
             <AlbumTable/>
         </Container>
@@ -57,7 +58,7 @@ function AlbumTable() {
             {
                 Header: 'Album',
                 accessor: 'name' as const,
-                Cell: ({ row }: { row: any }) =>
+                Cell: ({row}: { row: any }) =>
                     <Link as={RouterLink} color={'blue.500'} to={`${row.original.id}`}>{row.original.name}</Link>,
             },
             {
@@ -74,8 +75,11 @@ function AlbumTable() {
             },
             {
                 id: 'edit-button',
-                Cell: ({ row }: { row: any }) =>
-                    <AlbumModal album={row.original} />,
+                Cell: ({row}: { row: any }) =>
+                    <HStack spacing={2}>
+                        <AlbumForm album={row.original}/>
+                        <AlbumDelete album={row.original}/>
+                    </HStack>,
             },
         ],
         [],
@@ -129,7 +133,7 @@ function AlbumTable() {
 }
 
 
-function AlbumModal( { album, reload = () => {}}: { album?: any, reload?: () => void }) {
+export function AlbumForm({ album, reload = () => {}}: { album?: any, reload?: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure()
     const formik = useFormik({
         initialValues: {
@@ -145,12 +149,13 @@ function AlbumModal( { album, reload = () => {}}: { album?: any, reload?: () => 
     })
     return (
         <>
-            <IconButton aria-label='Add to friends' icon={ album ? <EditIcon/> : <AddIcon/>} color={'#005A80'} onClick={onOpen}/>
+            <IconButton aria-label='Add to friends' icon={album ? <EditIcon/> : <AddIcon/>} color={'#005A80'}
+                        onClick={onOpen}/>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay/>
                 <ModalContent>
-                    <ModalHeader>{ album ? 'Edit album info' : 'New album' }</ModalHeader>
+                    <ModalHeader>{album ? 'Edit album info' : 'New album'}</ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
                         <form>
@@ -184,6 +189,36 @@ function AlbumModal( { album, reload = () => {}}: { album?: any, reload?: () => 
                     <ModalFooter>
                         <Button bg='#005A80' color={'white'} mr={3} onClick={() => formik.handleSubmit}>
                             Create
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
+    );
+}
+
+export function AlbumDelete({ album, reload = () => {}}: { album?: any, reload?: () => void }) {
+    const {isOpen, onOpen, onClose} = useDisclosure()
+    return (
+        <>
+            <IconButton aria-label='Add to friends' icon={<DeleteIcon/>} colorScheme={'red'}
+                        onClick={onOpen}/>
+
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay/>
+                <ModalContent>
+                    <ModalHeader>Delete album</ModalHeader>
+                    <ModalCloseButton/>
+                    <ModalBody>
+                        <p>Are you sure you want to delete this album?</p>
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button colorScheme={'red'} mr={3} onClick={() => {
+                            reload();
+                            onClose();
+                        }}>
+                            Delete
                         </Button>
                     </ModalFooter>
                 </ModalContent>
