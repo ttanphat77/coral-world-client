@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    AspectRatio,
     Box,
     Button,
     Center,
@@ -58,7 +59,9 @@ function Photo() {
              _hover={{
                  transform: 'scale(1.05)',
              }}>
-            <Image w={'100%'} objectFit={'contain'} src={'https://picsum.photos/200'} borderRadius={10}/>
+            <AspectRatio w={'100%'} ratio={1}>
+                <Image boxSize={'100%'} height={'100vmin'} objectFit={'contain'} src={'https://picsum.photos/200/300'} borderRadius={10}/>
+            </AspectRatio>
             <Textarea w={'100%'} variant={'filled'} mt={2} placeholder={'Description (optional)'}/>
         </Box>
     );
