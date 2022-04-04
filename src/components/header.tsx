@@ -30,9 +30,11 @@ import {
 } from '@chakra-ui/icons';
 import logo from '../assets/coral-trimmy.png';
 import {Link as RouterLink} from 'react-router-dom';
+import {useAuth} from '../hooks/useAuth';
 
 export default function Header() {
     const {isOpen, onToggle} = useDisclosure();
+    const auth = useAuth();
 
     return (
         <Box>
@@ -73,66 +75,70 @@ export default function Header() {
                     <Flex display={{base: 'none', md: 'flex'}} ml={10}>
                         <DesktopNav/>
                     </Flex>
-                    <Menu>
-                        <MenuButton
-                            as={Button}
-                            rounded={'full'}
-                            variant={'link'}
-                            cursor={'pointer'}
-                            minW={0}
-                        >
-                            <Avatar
-                                size={'sm'}
-                                src={
-                                    'https://avatars.dicebear.com/api/male/username.svg'
-                                }
-                            />
-                        </MenuButton>
-                        <MenuList bg={'#005A80'}>
+                    {
+                        auth.user ? <Menu>
+                                <MenuButton
+                                    as={Button}
+                                    rounded={'full'}
+                                    variant={'link'}
+                                    cursor={'pointer'}
+                                    minW={0}
+                                >
+                                    <Avatar
+                                        size={'sm'}
+                                        src={
+                                            'https://avatars.dicebear.com/api/male/username.svg'
+                                        }
+                                    />
+                                </MenuButton>
+                                <MenuList bg={'#005A80'}>
 
-                            <br/>
-                            <Center>
-                                <Avatar
-                                    size={'2xl'}
-                                    src={'https://avatars.dicebear.com/api/male/username.svg'}
-                                />
-                            </Center>
-                            <br/>
-                            <Center>
-                                <p>Username</p>
-                            </Center>
-                            <br/>
-                            <MenuDivider/>
-                            <MenuItem
-                                _focus={{bg: '#337B99'}}>Your Servers</MenuItem>
-                            <MenuItem
-                                _focus={{bg: '#337B99'}}>Account Settings</MenuItem>
-                            <MenuItem
-                                _focus={{bg: '#337B99'}}>Logout</MenuItem>
-                        </MenuList>
-                    </Menu>
-                    {/*<Button*/}
-                    {/*    as={RouterLink}*/}
-                    {/*    to={'/signin'}*/}
-                    {/*    fontSize={'sm'}*/}
-                    {/*    fontWeight={400}*/}
-                    {/*    color={'white'}*/}
-                    {/*    variant={'link'}>*/}
-                    {/*    Sign In*/}
-                    {/*</Button>*/}
-                    {/*<Button*/}
-                    {/*    as={RouterLink}*/}
-                    {/*    to={'/signup'}*/}
-                    {/*    display={{ base: 'none', md: 'inline-flex' }}*/}
-                    {/*    fontSize={'sm'}*/}
-                    {/*    fontWeight={600}*/}
-                    {/*    color={'white'}*/}
-                    {/*    bg={'#FFA57F'}*/}
-                    {/*    _hover={{*/}
-                    {/*        bg: '#E69E7F',*/}
-                    {/*    }}>*/}
-                    {/*    Sign Up*/}
-                    {/*</Button>*/}
+                                    <br/>
+                                    <Center>
+                                        <Avatar
+                                            size={'2xl'}
+                                            src={'https://avatars.dicebear.com/api/male/username.svg'}
+                                        />
+                                    </Center>
+                                    <br/>
+                                    <Center>
+                                        <p>Username</p>
+                                    </Center>
+                                    <br/>
+                                    <MenuDivider/>
+                                    <MenuItem
+                                        _focus={{bg: '#337B99'}} as={RouterLink} to={'/user/gallery'}>My Gallery</MenuItem>
+                                    <MenuItem
+                                        _focus={{bg: '#337B99'}}>Account Settings</MenuItem>
+                                    <MenuItem
+                                        _focus={{bg: '#337B99'}} onClick={() => auth.signout()}>Logout</MenuItem>
+                                </MenuList>
+                            </Menu> :
+                            <>
+                                <Button
+                                    as={RouterLink}
+                                    to={'/auth/signin'}
+                                    fontSize={'sm'}
+                                    fontWeight={400}
+                                    color={'white'}
+                                    variant={'link'}>
+                                    Sign In
+                                </Button>
+                                <Button
+                                    as={RouterLink}
+                                    to={'/auth/signup'}
+                                    display={{base: 'none', md: 'inline-flex'}}
+                                    fontSize={'sm'}
+                                    fontWeight={600}
+                                    color={'white'}
+                                    bg={'#FFA57F'}
+                                    _hover={{
+                                        bg: '#E69E7F',
+                                    }}>
+                                    Sign Up
+                                </Button>
+                            </>
+                    }
                 </Stack>
             </Flex>
 
@@ -280,13 +286,13 @@ const MobileNavItem = ({label, children, href}: NavItem) => {
                     borderColor={'gray.700'}
                     align={'start'}>
                     {children &&
-                        children.map((child) => (
-                            <Link key={child.label} py={2}
-                                  as={RouterLink}
-                                  to={child.href ?? '#'}>
-                                {child.label}
-                            </Link>
-                        ))}
+                    children.map((child) => (
+                        <Link key={child.label} py={2}
+                              as={RouterLink}
+                              to={child.href ?? '#'}>
+                            {child.label}
+                        </Link>
+                    ))}
                 </Stack>
             </Collapse>
         </Stack>
