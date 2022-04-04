@@ -11,6 +11,7 @@ import {AuthProvider} from "./hooks/useAuth";
 import TaxonomyDetail from "./pages/taxonomyDetail/taxonomyDetail";
 import './App.css';
 import {useAuth} from "./hooks/useAuth";
+import Album from "./pages/userGallery/album";
 
 export const App = () => {
     const auth = useAuth();
@@ -30,7 +31,10 @@ export const App = () => {
                             <Route path="signup" element={<Signup />} />
                         </Route>
                         <Route path="/user" element={<RequireUserAuth />}>
-                            <Route path="gallery" element={<UserGallery />} />
+                            <Route path="gallery">
+                                <Route index element={<UserGallery />} />
+                                <Route path=":id" element={<Album />} />
+                            </Route>
                         </Route>
                     </Route>
                 </Routes>

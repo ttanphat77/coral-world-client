@@ -14,11 +14,19 @@ import {
 } from '@chakra-ui/react';
 import {useAuth} from "../../hooks/useAuth";
 import React from "react";
+import {useFormik} from "formik";
 
 export default function Signin() {
     const auth = useAuth();
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        onSubmit: values => {
+            auth.signin(values.email, values.password);
+        },
+    });
 
     return (
         <Flex
@@ -33,34 +41,36 @@ export default function Signin() {
                     bg={useColorModeValue('white', 'gray.700')}
                     boxShadow={'lg'}
                     p={8}>
-                    <Stack spacing={4}>
-                        <FormControl id="email">
-                            <FormLabel>Email address</FormLabel>
-                            <Input type="email" value={email} onChange={e=>setEmail(e.target.value)}/>
-                        </FormControl>
-                        <FormControl id="password">
-                            <FormLabel>Password</FormLabel>
-                            <Input type="password" value={password} onChange={e=>setPassword(e.target.value)}/>
-                        </FormControl>
-                        <Stack spacing={10}>
-                            {/*<Stack*/}
-                            {/*    direction={{ base: 'column', sm: 'row' }}*/}
-                            {/*    align={'start'}*/}
-                            {/*    justify={'space-between'}>*/}
-                            {/*    /!*<Checkbox>Remember me</Checkbox>*!/*/}
-                            {/*    <Link color={'blue.400'}>Forgot password?</Link>*/}
-                            {/*</Stack>*/}
-                            <Button
-                                bg={'blue.400'}
-                                color={'white'}
-                                onClick={() => auth.signin(email, password)}
-                                _hover={{
-                                    bg: 'blue.500',
-                                }}>
-                                Sign in
-                            </Button>
+                    <form onSubmit={formik.handleSubmit}>
+                        <Stack spacing={4}>
+                            <FormControl id="email">
+                                <FormLabel>Email address</FormLabel>
+                                <Input type="email" value={formik.values.email} onChange={formik.handleChange}/>
+                            </FormControl>
+                            <FormControl id="password">
+                                <FormLabel>Password</FormLabel>
+                                <Input type="password" value={formik.values.password} onChange={formik.handleChange}/>
+                            </FormControl>
+                            <Stack spacing={10}>
+                                {/*<Stack*/}
+                                {/*    direction={{ base: 'column', sm: 'row' }}*/}
+                                {/*    align={'start'}*/}
+                                {/*    justify={'space-between'}>*/}
+                                {/*    /!*<Checkbox>Remember me</Checkbox>*!/*/}
+                                {/*    <Link color={'blue.400'}>Forgot password?</Link>*/}
+                                {/*</Stack>*/}
+                                <Button
+                                    bg={'blue.400'}
+                                    color={'white'}
+                                    type={'submit'}
+                                    _hover={{
+                                        bg: 'blue.500',
+                                    }}>
+                                    Sign in
+                                </Button>
+                            </Stack>
                         </Stack>
-                    </Stack>
+                    </form>
                 </Box>
             </Stack>
         </Flex>

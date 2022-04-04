@@ -1,20 +1,16 @@
 import {
     AspectRatio,
     Box,
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
     Container, Divider, Grid, GridItem, Text,
-    Heading, Link, List, ListIcon, ListItem, SimpleGrid
-} from "@chakra-ui/react";
+    Heading, Link, List, ListIcon, ListItem, SimpleGrid, Button, useDisclosure, } from "@chakra-ui/react";
 import React, {useState} from "react";
 import {useParams} from "react-router-dom";
 import ImageGallery from "react-image-gallery";
-import { GrInherit } from "react-icons/gr";
-import { GiFootprint, GiDuality, GiAlgae, GiMeshNetwork } from "react-icons/gi";
-import { IoIosColorFilter } from "react-icons/io";
-import { Link as RouterLink } from 'react-router-dom';
-import { GrNotes } from "react-icons/gr";
+import {GrInherit} from "react-icons/gr";
+import {GiFootprint, GiDuality, GiAlgae, GiMeshNetwork} from "react-icons/gi";
+import {IoIosColorFilter} from "react-icons/io";
+import {Link as RouterLink} from 'react-router-dom';
+import {GrNotes} from "react-icons/gr";
 import './taxonomyDetail.css'
 
 export default function TaxonomyDetail() {
@@ -24,14 +20,15 @@ export default function TaxonomyDetail() {
                 <Box>
                     <Heading as='h2' size='xl' color={'#005A80'}>
                         Acropora abrolhosensis
-                    </Heading> Veron, 1985  <br/>
+                    </Heading> Veron, 1985 <br/>
                     <Divider my={4}/>
                     <List fontSize={'lg'}>
                         <ListItem>
                             <ListIcon as={GrInherit}/>
                             <span>
                                 <strong>Parent: </strong>
-                                <Link as={RouterLink} color={'blue.500'} to={'/genus/id'}>Acropora <Text fontSize={'sm'} as={'span'}>(Milne Edwards and Haime, 1848)</Text></Link>
+                                <Link as={RouterLink} color={'blue.500'} to={'/genus/id'}>Acropora <Text fontSize={'sm'}
+                                                                                                         as={'span'}>(Milne Edwards and Haime, 1848)</Text></Link>
                             </span>
                         </ListItem>
                         <ListItem>
@@ -110,6 +107,7 @@ function MediaCarousel() {
     ];
     return (
         <ImageGallery items={images}
-                      showPlayButton={false} showNav={false} thumbnailPosition={'top'}/>
+                      showPlayButton={false} showNav={false}/>
     )
 }
+

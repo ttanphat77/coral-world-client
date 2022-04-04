@@ -1,4 +1,4 @@
-import React, {useState, useContext, createContext} from "react";
+import React, {useState, useContext, createContext, useEffect} from "react";
 import http from '../http-common'
 import { useNavigate } from "react-router-dom";
 
@@ -43,6 +43,13 @@ function useProvideAuth() {
         setUser(null);
         localStorage.removeItem('user');
     }
+
+    useEffect(() => {
+        const localUser = localStorage.getItem('user');
+        if (localUser) {
+            setUser(JSON.parse(localUser));
+        }
+    }, []);
 
     return {
         user,
