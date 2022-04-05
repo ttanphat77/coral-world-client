@@ -15,7 +15,8 @@ import {
     WrapItem
 } from "@chakra-ui/react";
 import {AlbumDelete, AlbumForm} from "./userGallery";
-import {AddIcon} from "@chakra-ui/icons";
+import {AddIcon, DeleteIcon, DownloadIcon} from "@chakra-ui/icons";
+import {Link} from "react-router-dom";
 
 export default function Album() {
     const album: any = {
@@ -35,7 +36,7 @@ export default function Album() {
                 </HStack>
             </Flex>
             <Divider my={4}/>
-            <SimpleGrid columns={[1, 2,3,5]} spacing={4}>
+            <SimpleGrid columns={[1, 2, 3, 5]} spacing={4}>
                 <Photo/>
                 <Photo/>
                 <Photo/>
@@ -60,8 +61,18 @@ function Photo() {
                  transform: 'scale(1.05)',
              }}>
             <AspectRatio w={'100%'} ratio={1}>
-                <Image boxSize={'100%'} height={'100vmin'} objectFit={'contain'} src={'https://picsum.photos/200/300'} borderRadius={10}/>
+                <Box borderRadius={10} as={Link} to={'/user/photo/id'}>
+                    <Image
+                        boxSize={'100%'}
+                        objectFit={'cover'}
+                        src={'https://picsum.photos/200/300'}/>
+                </Box>
             </AspectRatio>
+            <Flex mt={2}>
+                <Spacer/>
+                <DownloadIcon mr={2}/>
+                <DeleteIcon color={'red.500'} mr={2}/>
+            </Flex>
             <Textarea w={'100%'} variant={'filled'} mt={2} placeholder={'Description (optional)'}/>
         </Box>
     );

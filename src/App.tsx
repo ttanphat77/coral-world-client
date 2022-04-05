@@ -57,7 +57,7 @@ function Layout() {
 
 function RequireUserAuth(props: any) {
     const auth = useAuth();
-    if (!auth.user) {
+    if (!auth.isAuthenticated()) {
         return <Navigate to={'/auth/signin'}/>
     }
     return <Outlet />

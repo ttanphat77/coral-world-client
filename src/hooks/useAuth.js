@@ -1,11 +1,11 @@
 import React, {useState, useContext, createContext, useEffect} from "react";
 import http from '../http-common'
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const authContext = createContext();
 const apiUrl = process.env.REACT_APP_API_URL + '/Login';
 
-export function AuthProvider({ children }) {
+export function AuthProvider({children}) {
     const auth = useProvideAuth()
     return <authContext.Provider value={auth}>{children}</authContext.Provider>
 }
@@ -51,11 +51,16 @@ function useProvideAuth() {
         }
     }, []);
 
+    const isAuthenticated = () => {
+        return user || localStorage.getItem('user');
+    }
+
     return {
         user,
         signin,
         signup,
         signout,
+        isAuthenticated,
     }
 
 }
