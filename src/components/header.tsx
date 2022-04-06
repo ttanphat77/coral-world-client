@@ -46,7 +46,7 @@ export default function Header() {
                 px={{base: 4}}
                 align={'center'}
                 position={'fixed'}
-                zIndex={2}
+                zIndex={1}
                 width={'100%'}>
                 <Flex
                     flex={{base: 1, md: 'auto'}}

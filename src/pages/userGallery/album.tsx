@@ -3,15 +3,14 @@ import {
     AspectRatio,
     Box,
     Button,
-    Center, CloseButton,
+    Center,
     Container,
     Divider,
     Flex,
     Heading,
-    HStack, IconButton,
-    Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, SimpleGrid,
+    HStack,
+    Image, Input, SimpleGrid,
     Spacer, Textarea,
-    useDisclosure,
     Wrap,
     WrapItem
 } from "@chakra-ui/react";
@@ -55,44 +54,26 @@ export default function Album() {
 }
 
 function Photo() {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-
     return (
         <Box w={'100%'}
-             position={'relative'}
              transition="0.3s ease-in-out"
              _hover={{
                  transform: 'scale(1.05)',
              }}>
-            <Box position={'absolute'} zIndex={1} top={2} right={2}>
-                <CloseButton size='lg' color={'white'}
-                             _hover={{
-                                 border: '1.5px solid white'
-                             }}/>
-            </Box>
-            <AspectRatio w={'100%'} ratio={1} onClick={onOpen} cursor={'pointer'}>
-                <Box borderRadius={10}>
+            <AspectRatio w={'100%'} ratio={1}>
+                <Box borderRadius={10} as={Link} to={'/user/photo/id'}>
                     <Image
                         boxSize={'100%'}
                         objectFit={'cover'}
                         src={'https://picsum.photos/200/300'}/>
                 </Box>
             </AspectRatio>
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay/>
-                <ModalContent>
-                    <ModalHeader>Modal Title</ModalHeader>
-                    <ModalCloseButton/>
-                    <ModalBody>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <Flex mt={2}>
+                <Spacer/>
+                <DownloadIcon mr={2}/>
+                <DeleteIcon color={'red.500'} mr={2}/>
+            </Flex>
             <Textarea w={'100%'} variant={'filled'} mt={2} placeholder={'Description (optional)'}/>
         </Box>
     );
 }
-
-// function PhotoViewer(isOpen: any, onClose: () => void) {
-//     return (
-//     )
-// }
