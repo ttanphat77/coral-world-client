@@ -3,16 +3,23 @@ import {
     AspectRatio,
     Box,
     Button,
-    Center,
+    Center, CloseButton,
     Container,
     Divider,
     Flex,
     Heading,
-    HStack,
+    HStack, IconButton,
     Image, Input, SimpleGrid,
-    Spacer, Textarea,
+    Spacer, Textarea, useDisclosure,
     Wrap,
-    WrapItem
+    WrapItem,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton, Stack, Text,
 } from "@chakra-ui/react";
 import {AlbumDelete, AlbumForm} from "./userGallery";
 import {AddIcon, DeleteIcon, DownloadIcon} from "@chakra-ui/icons";
@@ -54,26 +61,73 @@ export default function Album() {
 }
 
 function Photo() {
+    const {isOpen: isViewerOpen, onClose: onViewerClose, onOpen: onViewerOpen} = useDisclosure();
+
     return (
         <Box w={'100%'}
+             position={'relative'}
              transition="0.3s ease-in-out"
              _hover={{
                  transform: 'scale(1.05)',
              }}>
+            <Box
+                position={'absolute'}
+                top={2}
+                right={2}
+                zIndex={1}>
+                <CloseButton color={'white'}
+                             _hover={{
+                                 border: '2px solid white'
+                             }}/>
+            </Box>
             <AspectRatio w={'100%'} ratio={1}>
-                <Box borderRadius={10} as={Link} to={'/user/photo/id'}>
+                <Box borderRadius={10}
+                     onClick={onViewerOpen}>
                     <Image
+                        cursor={'pointer'}
                         boxSize={'100%'}
                         objectFit={'cover'}
-                        src={'https://picsum.photos/200/300'}/>
+                        src={'https://picsum.photos/1000/700'}/>
                 </Box>
             </AspectRatio>
-            <Flex mt={2}>
-                <Spacer/>
-                <DownloadIcon mr={2}/>
-                <DeleteIcon color={'red.500'} mr={2}/>
-            </Flex>
             <Textarea w={'100%'} variant={'filled'} mt={2} placeholder={'Description (optional)'}/>
+            <Modal isOpen={isViewerOpen} onClose={onViewerClose}
+                   closeOnOverlayClick={false} size={'6xl'}
+                   scrollBehavior={'inside'}>
+                <ModalOverlay/>
+                <ModalContent>
+                    <ModalHeader>
+                        <ModalCloseButton/>
+                    </ModalHeader>
+                    <ModalBody>
+                        <SimpleGrid columns={[1, 1, 2]} spacing={8}>
+                            <Box height={['50vh', '50vh', '70vh']} bg={'black'}
+                                 onClick={onViewerOpen} alignContent={'center'}>
+                                <Image
+                                    height={'100%'}
+                                    width={'100%'}
+                                    objectFit={'contain'}
+                                    src={'https://picsum.photos/1000/700'}/>
+                            </Box>
+                            <Box>
+                                <Stack>
+                                    <Text>
+                                        <strong>Description: </strong>
+                                        <em>
+                                        Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur,
+                                        adipisci velit...</em>
+                                    </Text>
+                                    <Text>
+                                        <strong>Coral detect: </strong>
+                                        <em style={{color: 'green'}}>Processing...</em>
+                                    </Text>
+                                </Stack>
+                            </Box>
+                        </SimpleGrid>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Box>
-    );
+    )
+        ;
 }

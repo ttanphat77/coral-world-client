@@ -2,7 +2,8 @@ import {
     AspectRatio,
     Box,
     Container, Divider, Grid, GridItem, Text,
-    Heading, Link, List, ListIcon, ListItem, SimpleGrid, Button, useDisclosure, } from "@chakra-ui/react";
+    Heading, Link, List, ListIcon, ListItem, SimpleGrid, Button, useDisclosure, Flex, Spacer,
+} from "@chakra-ui/react";
 import React, {useState} from "react";
 import {useParams} from "react-router-dom";
 import ImageGallery from "react-image-gallery";
@@ -12,10 +13,21 @@ import {IoIosColorFilter} from "react-icons/io";
 import {Link as RouterLink} from 'react-router-dom';
 import {GrNotes} from "react-icons/gr";
 import './taxonomyDetail.css'
+import {EditIcon} from "@chakra-ui/icons";
+import {BiImageAdd} from "react-icons/bi";
 
 export default function TaxonomyDetail() {
     return (
-        <Container maxW={'container.xl'} py={8}>
+        <Container maxW={'container.xl'} py={2}>
+            <Flex>
+                <Button variant={'solid'} leftIcon={<EditIcon/>}
+                        size={'sm'}>
+                    Contribute</Button>
+                <Spacer/>
+                <Button variant={'solid'} leftIcon={<BiImageAdd/>}
+                        size={'sm'}>
+                    Edit</Button>
+            </Flex>
             <SimpleGrid columns={[1, 1, 2]} gap={4}>
                 <Box>
                     <Heading as='h2' size='xl' color={'#005A80'}>
@@ -89,8 +101,8 @@ export default function TaxonomyDetail() {
 function MediaCarousel() {
     const images = [
         {
-            original: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjHtclol2ybfX4e9xDm3kQrkwSZib79Cajtw&usqp=CAU',
-            thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjHtclol2ybfX4e9xDm3kQrkwSZib79Cajtw&usqp=CAU',
+            original: 'https://picsum.photos/id/1015/1000/600/',
+            thumbnail: 'https://picsum.photos/id/1015/250/150/',
             description: 'Acropora abrolhosensis Small colony. Indonesia Photograph: Lyndon DeVantier',
             originalHeight: 1000,
         },
