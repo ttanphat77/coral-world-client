@@ -46,7 +46,7 @@ export default function Header() {
                 px={{base: 4}}
                 align={'center'}
                 position={'fixed'}
-                zIndex={1}
+                zIndex={2}
                 width={'100%'}>
                 <Flex
                     flex={{base: 1, md: 'auto'}}
@@ -324,19 +324,20 @@ const NAV_ITEMS: Array<NavItem> = [
         href: '/articles',
     },
     {
-        label: 'About',
-        href: '/about',
-        // children: [
-        //     {
-        //         label: 'Job Board',
-        //         subLabel: 'Find your dream design job',
-        //         href: '#',
-        //     },
-        //     {
-        //         label: 'Freelance Projects',
-        //         subLabel: 'An exclusive list for contract work',
-        //         href: '#',
-        //     },
-        // ],
+        label: 'Contribute',
+        children: [
+            {
+                label: 'Todo factsheet',
+                href: '#',
+            },
+            {
+                label: 'My Contribute',
+                href: '/researcher/contribute',
+            },
+            {
+                label: 'Image labeling',
+                href: '#',
+            }
+        ],
     },
 ];

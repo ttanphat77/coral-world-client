@@ -16,10 +16,11 @@ import {TriangleDownIcon, TriangleUpIcon} from '@chakra-ui/icons'
 import {useTable, useSortBy} from 'react-table'
 import {useFormik} from "formik";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
+import Datatable from "../../components/Datatable";
 
 export default function UserGallery() {
     return (
-        <Container maxW={"container.xl"} p={8}>
+        <Container maxW={"container.xl"} p={2}>
             <Heading as='h2' size='xl'>
                 My Gallery <AlbumForm/>
             </Heading>
@@ -90,45 +91,7 @@ function AlbumTable() {
     const navigate = useNavigate();
 
     return (
-        <Table {...getTableProps()}>
-            <Thead>
-                {headerGroups.map((headerGroup) => (
-                    <Tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map((column) => (
-                            <Th
-                                {...column.getHeaderProps(column.getSortByToggleProps())}
-                            >
-                                {column.render('Header')}
-                                <chakra.span pl='4'>
-                                    {column.isSorted ? (
-                                        column.isSortedDesc ? (
-                                            <TriangleDownIcon aria-label='sorted descending'/>
-                                        ) : (
-                                            <TriangleUpIcon aria-label='sorted ascending'/>
-                                        )
-                                    ) : null}
-                                </chakra.span>
-                            </Th>
-                        ))}
-                    </Tr>
-                ))}
-            </Thead>
-            <Tbody {...getTableBodyProps()}>
-                {rows.map((row) => {
-                    prepareRow(row)
-                    // @ts-ignore
-                    return (
-                        <Tr {...row.getRowProps()}>
-                            {row.cells.map((cell) => (
-                                <Td {...cell.getCellProps()}>
-                                    {cell.render('Cell')}
-                                </Td>
-                            ))}
-                        </Tr>
-                    )
-                })}
-            </Tbody>
-        </Table>
+        <Datatable columns={columns} data={data}/>
     )
 }
 
@@ -150,7 +113,7 @@ export function AlbumForm({ album, reload = () => {}}: { album?: any, reload?: (
     return (
         <>
             <IconButton aria-label='Add to friends' icon={album ? <EditIcon/> : <AddIcon/>} color={'#005A80'}
-                        onClick={onOpen}/>
+                        onClick={onOpen} size={'sm'}/>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay/>
@@ -202,7 +165,7 @@ export function AlbumDelete({ album, reload = () => {}}: { album?: any, reload?:
     return (
         <>
             <IconButton aria-label='Add to friends' icon={<DeleteIcon/>} colorScheme={'red'}
-                        onClick={onOpen}/>
+                        onClick={onOpen} size={'sm'}/>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay/>

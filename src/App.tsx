@@ -12,6 +12,7 @@ import TaxonomyDetail from "./pages/taxonomyDetail/taxonomyDetail";
 import './App.css';
 import {useAuth} from "./hooks/useAuth";
 import Album from "./pages/userGallery/album";
+import UserContribution from "./pages/contributeMangement/userContribution";
 
 export const App = () => {
     const auth = useAuth();
@@ -35,6 +36,10 @@ export const App = () => {
                                 <Route index element={<UserGallery />} />
                                 <Route path=":id" element={<Album />} />
                             </Route>
+                            <Route path="contribute" element={<UserContribution />} />
+                        </Route>
+                        <Route path="/researcher" element={<RequireResearcherAuth />}>
+                            <Route path="contribute" element={<UserContribution />} />
                         </Route>
                     </Route>
                 </Routes>
@@ -56,6 +61,22 @@ function Layout() {
 }
 
 function RequireUserAuth(props: any) {
+    const auth = useAuth();
+    if (!auth.isAuthenticated()) {
+        return <Navigate to={'/auth/signin'}/>
+    }
+    return <Outlet />
+}
+
+function RequireResearcherAuth(props: any) {
+    const auth = useAuth();
+    if (!auth.isAuthenticated()) {
+        return <Navigate to={'/auth/signin'}/>
+    }
+    return <Outlet />
+}
+
+function RequireAdminAuth(props: any) {
     const auth = useAuth();
     if (!auth.isAuthenticated()) {
         return <Navigate to={'/auth/signin'}/>

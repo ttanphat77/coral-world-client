@@ -33,7 +33,7 @@ export default function Album() {
     };
 
     return (
-        <Container maxW={'container.xl'} p={8}>
+        <Container maxW={'container.xl'} p={2}>
             <Flex>
                 <Heading as={'h2'} size={'xl'}>{album.name} <Button leftIcon={<AddIcon/>}>Upload</Button></Heading>
                 <Spacer/>
