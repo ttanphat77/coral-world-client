@@ -80,7 +80,7 @@ export default function Album() {
                                 AlbumServices.get(id).then((res: any) => {
                                     res.data.find((media: any) => {
                                         if (media.mediaURL === url) {
-                                            UserMediaServices.triggerDetect(res.data.userMediaId);
+                                            UserMediaServices.triggerDetect(media.userMediaId);
                                         }
                                     });
                                     setAlbum(res.data);
