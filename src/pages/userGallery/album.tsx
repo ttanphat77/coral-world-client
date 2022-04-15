@@ -77,8 +77,14 @@ export default function Album() {
                                 caption: "",
                                 mediaURL: url,
                             }).then((res: any) => {
-                                UserMediaServices.triggerDetect(res.data.userMediaId);
-                                loadMedia();
+                                AlbumServices.get(id).then((res: any) => {
+                                    res.data.find((media: any) => {
+                                        if (media.mediaURL === url) {
+                                            UserMediaServices.triggerDetect(res.data.userMediaId);
+                                        }
+                                    });
+                                    setAlbum(res.data);
+                                });
                             });
                         });
                     });
