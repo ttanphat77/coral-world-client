@@ -25,7 +25,7 @@ import {
     TriangleUpIcon
 } from "@chakra-ui/icons";
 
-export default function ({columns, data}: any) {
+export default function ({columns, data, sortBy}: any) {
     const filterTypes = React.useMemo(
         () => ({
             text: (rows: any, id: any, filterValue: any) => {
@@ -65,6 +65,7 @@ export default function ({columns, data}: any) {
             data,
             defaultColumn,
             filterTypes,
+            initialState: sortBy ? {sortBy} : undefined,
         }, useFilters, useSortBy,  usePagination);
 
     return (
@@ -74,19 +75,20 @@ export default function ({columns, data}: any) {
                     {headerGroups.map((headerGroup) => (
                         <Tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map((column) => (
-                                <Th
-                                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                                >
-                                    {column.render('Header')}
-                                    <chakra.span pl='4'>
-                                        {column.isSorted ? (
-                                            column.isSortedDesc ? (
-                                                <TriangleDownIcon aria-label='sorted descending'/>
-                                            ) : (
-                                                <TriangleUpIcon aria-label='sorted ascending'/>
-                                            )
-                                        ) : null}
-                                    </chakra.span>
+                                <Th>
+                                    <Box
+                                        {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                        <chakra.span pl='4'>
+                                            {column.isSorted ? (
+                                                column.isSortedDesc ? (
+                                                    <TriangleDownIcon aria-label='sorted descending'/>
+                                                ) : (
+                                                    <TriangleUpIcon aria-label='sorted ascending'/>
+                                                )
+                                            ) : null}
+                                        </chakra.span>
+                                    </Box>
                                     <Box>{column.canFilter ? column.render('Filter') : null}</Box>
                                 </Th>
                             ))}
@@ -206,5 +208,34 @@ function DefaultColumnFilter({column: {filterValue, preFilteredRows, setFilter},
             }}
             placeholder={`Search ${count} records...`}
         />
+    )
+}
+
+export function OptionFilter({column: {filterValue, setFilter, preFilteredRows, id},}: any) {
+    // Calculate the options for filtering
+    // using the preFilteredRows
+    const options: any = React.useMemo(() => {
+        const options = new Set()
+        preFilteredRows.forEach((row: any) => {
+            options.add(row.values[id])
+        })
+        return [...options.values()]
+    }, [id, preFilteredRows])
+
+    // Render a multi-select box
+    return (
+        <Select
+            value={filterValue}
+            onChange={e => {
+                setFilter(e.target.value || undefined)
+            }}
+        >
+            <option value="">All</option>
+            {options.map((option: any, i: number) => (
+                <option key={i} value={option}>
+                    {option}
+                </option>
+            ))}
+        </Select>
     )
 }

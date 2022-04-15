@@ -13,6 +13,13 @@ import './App.css';
 import {useAuth} from "./hooks/useAuth";
 import Album from "./pages/userGallery/album";
 import UserContribution from "./pages/contributeMangement/userContribution";
+import SimpleSidebar from "./components/sidebar";
+import Welcome from "./pages/admin/welcome";
+import SpeciesManagement from "./pages/admin/speciesManagement";
+import GenusManagement from "./pages/admin/genusManagement";
+import DivingSessionManagement from "./pages/admin/divingSessionManagement";
+import Todofactsheet from "./pages/contributeMangement/todofactsheet";
+import ImageLabeling from "./pages/contributeMangement/imageLabeling";
 
 export const App = () => {
     const auth = useAuth();
@@ -40,6 +47,14 @@ export const App = () => {
                         </Route>
                         <Route path="/researcher" element={<RequireResearcherAuth />}>
                             <Route path="contribute" element={<UserContribution />} />
+                            <Route path="todo" element={<Todofactsheet />} />
+                            <Route path="image-label" element={<ImageLabeling />} />
+                        </Route>
+                        <Route path="/admin" element={<RequireAdminAuth />}>
+                            <Route index element={<Welcome />} />
+                            <Route path="species" element={<SpeciesManagement />} />
+                            <Route path="genus" element={<GenusManagement />} />
+                            <Route path="divingSession" element={<DivingSessionManagement />} />
                         </Route>
                     </Route>
                 </Routes>
@@ -53,7 +68,7 @@ function Layout() {
         <div>
             <Header/>
             <hr/>
-            <div style={{margin: '75px 0 0 0'}}>
+            <div style={{margin: '59px 0 0 0'}}>
                 <Outlet/>
             </div>
         </div>
@@ -81,7 +96,12 @@ function RequireAdminAuth(props: any) {
     if (!auth.isAuthenticated()) {
         return <Navigate to={'/auth/signin'}/>
     }
-    return <Outlet />
+    return (
+        <SimpleSidebar>
+            <div>
+                <Outlet/>
+            </div>
+        </SimpleSidebar>)
 }
 
 function RequireUnauth() {

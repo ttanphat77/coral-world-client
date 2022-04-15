@@ -35,48 +35,49 @@ import {useAuth} from '../hooks/useAuth';
 export default function Header() {
     const {isOpen, onToggle} = useDisclosure();
     const auth = useAuth();
+    const user = auth?.user;
+
+    const NAV_ITEMS = (user && user?.account?.role == 1) ? USER_NAV_ITEMS : user?.account?.role == 2 ? ADMIN_NAV_ITEMS : RES_NAV_ITEMS;
+
 
     return (
-        <Box>
+        <Box
+            position={'fixed'}
+            zIndex={2}
+            width={'100%'}>
             <Flex
                 bg={'#005A80'}
                 color={'white'}
                 minH={'60px'}
                 py={{base: 2}}
                 px={{base: 4}}
-                align={'center'}
-                position={'fixed'}
-                zIndex={2}
+                alignItems={'center'}
+                justify={'space-between'}
                 width={'100%'}>
-                <Flex
-                    flex={{base: 1, md: 'auto'}}
-                    ml={{base: -2}}
-                    display={{base: 'flex', md: 'none'}}>
-                    <IconButton
-                        onClick={onToggle}
-                        icon={
-                            isOpen ? <CloseIcon w={3} h={3}/> : <HamburgerIcon w={5} h={5}/>
-                        }
-                        variant={'ghost'}
-                        aria-label={'Toggle Navigation'}
-                    />
-                </Flex>
-                <Flex flex={{base: 1}} justify={{base: 'center', md: 'start'}}>
+                <IconButton
+                    display={{base: 'block', md: 'none'}}
+                    onClick={onToggle}
+                    icon={
+                        isOpen ? <CloseIcon w={3} h={3}/> : <HamburgerIcon w={5} h={5}/>
+                    }
+                    variant={'ghost'}
+                    aria-label={'Toggle Navigation'}
+                />
+                <Box>
                     <Image
                         src={logo}
-                        height={'60px'}/>
-                </Flex>
+                        height={'40px'}/>
+                </Box>
 
                 <Stack
-                    flex={{base: 1, md: 0}}
-                    justify={'flex-end'}
+                    // justify={'flex-end'}
                     direction={'row'}
                     spacing={6}>
                     <Flex display={{base: 'none', md: 'flex'}} ml={10}>
-                        <DesktopNav/>
+                        <DesktopNav navItems={NAV_ITEMS}/>
                     </Flex>
                     {
-                        auth.user ? <Menu>
+                        user ? <Menu>
                                 <MenuButton
                                     as={Button}
                                     rounded={'full'}
@@ -86,9 +87,8 @@ export default function Header() {
                                 >
                                     <Avatar
                                         size={'sm'}
-                                        src={
-                                            'https://avatars.dicebear.com/api/male/username.svg'
-                                        }
+                                        name={user?.account?.firstName + ' ' + user.account?.lastName}
+                                        src={user?.account?.avatar}
                                     />
                                 </MenuButton>
                                 <MenuList bg={'#005A80'}>
@@ -97,12 +97,13 @@ export default function Header() {
                                     <Center>
                                         <Avatar
                                             size={'2xl'}
-                                            src={'https://avatars.dicebear.com/api/male/username.svg'}
+                                            name={user?.account?.firstName + ' ' + user.account?.lastName}
+                                            src={user?.account?.avatar}
                                         />
                                     </Center>
                                     <br/>
                                     <Center>
-                                        <p>Username</p>
+                                        <p>{user?.account?.firstName + ' ' + user.account?.lastName}</p>
                                     </Center>
                                     <br/>
                                     <MenuDivider/>
@@ -143,20 +144,20 @@ export default function Header() {
             </Flex>
 
             <Collapse in={isOpen} animateOpacity>
-                <MobileNav/>
+                <MobileNav navItems={NAV_ITEMS}/>
             </Collapse>
         </Box>
     );
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({navItems}:{navItems:Array<NavItem>}) => {
     const linkColor = 'white';
     const linkHoverColor = 'white';
     const popoverContentBgColor = '#4D8CA6';
 
     return (
         <Stack direction={'row'} spacing={4}>
-            {NAV_ITEMS.map((navItem) => (
+            {navItems.map((navItem) => (
                 <Box key={navItem.label}>
                     <Popover trigger={'hover'} placement={'bottom-start'}>
                         <PopoverTrigger>
@@ -202,6 +203,7 @@ const DesktopNav = () => {
 const DesktopSubNav = ({label, href, subLabel}: NavItem) => {
     return (
         <Link
+            color={'white'}
             as={RouterLink}
             to={href ?? '#'}
             role={'group'}
@@ -234,13 +236,13 @@ const DesktopSubNav = ({label, href, subLabel}: NavItem) => {
     );
 };
 
-const MobileNav = () => {
+const MobileNav = ({navItems}:{navItems:Array<NavItem>}) => {
     return (
         <Stack
             bg={'gray.800'}
             p={4}
             display={{md: 'none'}}>
-            {NAV_ITEMS.map((navItem) => (
+            {navItems.map((navItem) => (
                 <MobileNavItem key={navItem.label} {...navItem} />
             ))}
         </Stack>
@@ -280,6 +282,7 @@ const MobileNavItem = ({label, children, href}: NavItem) => {
             <Collapse in={isOpen} animateOpacity style={{marginTop: '0!important'}}>
                 <Stack
                     mt={2}
+                    color={'white'}
                     pl={4}
                     borderLeft={1}
                     borderStyle={'solid'}
@@ -306,7 +309,49 @@ interface NavItem {
     href?: string;
 }
 
-const NAV_ITEMS: Array<NavItem> = [
+const USER_NAV_ITEMS: Array<NavItem> = [
+    {
+        label: 'Home',
+        href: '/',
+    },
+    {
+        label: 'Coral taxonomy',
+        href: '/taxonomy',
+    },
+    {
+        label: 'Gallery',
+        href: '/articles',
+    },
+    {
+        label: 'Articles',
+        href: '/articles',
+    }
+];
+
+const ADMIN_NAV_ITEMS: Array<NavItem> = [
+    {
+        label: 'Home',
+        href: '/',
+    },
+    {
+        label: 'Coral taxonomy',
+        href: '/taxonomy',
+    },
+    {
+        label: 'Gallery',
+        href: '/articles',
+    },
+    {
+        label: 'Articles',
+        href: '/articles',
+    },
+    {
+        label: 'ADMIN',
+        href: '/Admin',
+    },
+];
+
+const RES_NAV_ITEMS: Array<NavItem> = [
     {
         label: 'Home',
         href: '/',
@@ -328,7 +373,7 @@ const NAV_ITEMS: Array<NavItem> = [
         children: [
             {
                 label: 'Todo factsheet',
-                href: '#',
+                href: '/researcher/todo',
             },
             {
                 label: 'My Contribute',
@@ -336,8 +381,9 @@ const NAV_ITEMS: Array<NavItem> = [
             },
             {
                 label: 'Image labeling',
-                href: '#',
+                href: '/researcher/image-label',
             }
         ],
     },
 ];
+

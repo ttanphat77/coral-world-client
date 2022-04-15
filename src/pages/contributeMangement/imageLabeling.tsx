@@ -1,20 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel,
+    Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, HStack, Link,
 } from "@chakra-ui/react";
+import CoralSpeciesServices from "../../services/coralSpeciesServices";
+import Datatable, {OptionFilter} from "../../components/datatable";
+import {Link as RouterLink} from 'react-router-dom';
+import CoralGenusServices from "../../services/coralGenusServices";
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import DraftTable from "./draftTable";
 import MediaContributeTable from "./mediaContributeTable";
 
-export default function UserContribution() {
+export default function ImageLabeling() {
     return (
         <Container maxW={"container.xl"} p={2}>
             <Heading as='h2' size='xl'>
-                My Contribution
+                Label coral images
             </Heading>
             <Tabs>
                 <TabList>
-                    <Tab>Factsheet</Tab>
-                    <Tab>Media</Tab>
+                    <Tab>Suggest label</Tab>
+                    <Tab>Verify label</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -29,3 +34,4 @@ export default function UserContribution() {
         </Container>
     );
 }
+

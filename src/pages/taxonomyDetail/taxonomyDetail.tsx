@@ -1,33 +1,12 @@
 import {
-    AspectRatio,
-    Box,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    Container,
-    Divider,
-    Grid,
-    GridItem,
-    Text,
-    Heading,
-    Link,
-    List,
-    ListIcon,
-    ListItem,
-    SimpleGrid,
-    Button,
-    useDisclosure,
-    Flex,
-    Spacer,
-    Stack,
-    FormControl,
-    FormLabel, Input, FormErrorMessage, Textarea,
+    Box, Modal, ModalOverlay, ModalContent,
+    ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
+    Container, Divider, Grid, GridItem, Text, Heading,
+    Link, List, ListIcon, ListItem,
+    SimpleGrid, Button, useDisclosure, Flex, Spacer, Stack,
+    FormControl, FormLabel, Input, FormErrorMessage, Textarea,
 } from "@chakra-ui/react";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import ImageGallery from "react-image-gallery";
 import {GrInherit} from "react-icons/gr";
@@ -39,91 +18,112 @@ import './taxonomyDetail.css'
 import {EditIcon} from "@chakra-ui/icons";
 import {BiImageAdd} from "react-icons/bi";
 import {useFormik} from "formik";
+import CoralSpeciesServices from "../../services/coralSpeciesServices";
+import CoralGenusServices from "../../services/coralGenusServices";
+import {useAuth} from "../../hooks/useAuth";
+import SpeciesDraftServices from "../../services/speciesDraftServices";
 
 export default function TaxonomyDetail() {
-    const coral = {
-        name: 'Acropora abrolhosensis',
-        author: 'Veron, 1985',
-        characters: 'Colonies are encrusting and usually small. Corallites are cerioid, with irregular angular shapes. A central corallite is often conspicuous. Septa are compact and columellae are small. Colonies are not fleshy.',
-        color: 'Usually pale grey, brown or rust coloured, often mottled.',
-        similar: 'Sometimes superficially resembles small colonies of Moseleya latistellata. If a central corallite is inconspicuous it resembles Favites. See also Acanthastrea hemprichii and A. rotundoflora.',
-        habitat: 'Lower reef slopes protected from wave action.',
-        abundance: 'Rare except in subtropical localities of eastern Australia.',
-        taxonomic_note: 'The type species of Calathiscus Claereboudt and Al-Amri, 2004. Placed in Goniopora by Kitano, Benzoni, Arrigoni et al. (2014), but the septal configuration clearly distinguishes this species from any Goniopora.',
-        parent: {
-            name: 'Acropora',
-            author: 'Milne Edwards and Haime, 1848'
-        }
+    let {id} = useParams();
+    const user = useAuth().user;
+
+    const [coral, setCoral] = useState<any>({});
+    const [genus, setGenus] = useState<any>({});
+    const [medias, setMedias] = useState<any[]>([]);
+
+    useEffect(() => {
+        load();
+    }, []);
+
+
+    const load = () => {
+        CoralSpeciesServices.get(id).then(res => {
+            setCoral(res.data);
+            if (res.data.parentId) {
+                CoralGenusServices.get(res.data.parentId).then(genus => {
+                    setGenus(genus.data);
+                })
+            }
+        });
     }
 
     return (
         <Container maxW={'container.xl'} py={2}>
+            {user?.account?.role == 3 &&
             <Flex mb={2}>
-                <UpdateButton coral={coral}/>
+                <UpdateButton coral={coral} user={user}/>
                 <Spacer/>
                 <Button variant={'solid'} leftIcon={<BiImageAdd/>}
                         size={'sm'}>
                     Contribute</Button>
             </Flex>
+            }
             <SimpleGrid columns={[1, 1, 2]} gap={4}>
                 <Box>
                     <Heading as='h2' size='xl' color={'#005A80'}>
-                        {coral.name}
-                    </Heading> {coral.author} <br/>
+                        {coral.scientificName}
+                    </Heading> {coral.authorCitation} <br/>
                     <Divider my={4}/>
                     <List fontSize={'lg'}>
-                        <ListItem>
-                            <ListIcon as={GrInherit}/>
-                            <span>
-                                <strong>Parent: </strong>
-                                <Link as={RouterLink} color={'blue.500'} to={'/genus/id'}>{coral.parent.name} <Text
-                                    fontSize={'sm'}
-                                    as={'span'}>({coral.parent.author})</Text></Link>
-                            </span>
-                        </ListItem>
-                        <ListItem>
-                            <ListIcon as={GiFootprint}/>
-                            <span>
-                                <strong>Characters: </strong>
-                                <em>{coral.characters}</em>
-                            </span>
-                        </ListItem>
-                        <ListItem>
-                            <ListIcon as={IoIosColorFilter}/>
-                            <span>
-                                <strong>Color: </strong>
-                                <em>{coral.color}</em>
-                            </span>
-                        </ListItem>
-                        <ListItem>
-                            <ListIcon as={GiDuality}/>
-                            <span>
-                                <strong>Similar Species: </strong>
-                                <em>{coral.similar}</em>
-                            </span>
-                        </ListItem>
-                        <ListItem>
-                            <ListIcon as={GiAlgae}/>
-                            <span>
-                                <strong>Habitat: </strong>
-                                <em>{coral.habitat}</em>
-                            </span>
-                        </ListItem>
-                        <ListItem>
-                            <ListIcon as={GiMeshNetwork}/>
-                            <span>
-                                <strong>Abundance: </strong>
-                                <em>{coral.abundance}</em>
-                            </span>
-                        </ListItem>
+                        {coral?.parentId ?
+                            <ListItem>
+                                <ListIcon as={GrInherit}/>
+                                <span>
+                                    <strong>Parent: </strong>
+                                    <Link as={RouterLink} color={'blue.500'} to={'/genus/' + genus?.coralGenusId}>
+                                        {genus?.scientificName} <Text fontSize={'sm'}
+                                                                      as={'span'}>({genus?.authorCitation})</Text></Link>
+                                </span>
+                            </ListItem> : ''}
+                        {coral?.characters ?
+                            <ListItem>
+                                <ListIcon as={GiFootprint}/>
+                                <span>
+                                    <strong>Characters: </strong>
+                                    <em>{coral.characters}</em>
+                                </span>
+                            </ListItem> : ''}
+                        {coral?.color ?
+                            <ListItem>
+                                <ListIcon as={IoIosColorFilter}/>
+                                <span>
+                                    <strong>Color: </strong>
+                                    <em>{coral.color}</em>
+                                </span>
+                            </ListItem> : ''}
+                        {coral?.similarSpecies ?
+                            <ListItem>
+                                <ListIcon as={GiDuality}/>
+                                <span>
+                                    <strong>Similar Species: </strong>
+                                    <em>{coral.similarSpecies}</em>
+                                </span>
+                            </ListItem> : ''}
+                        {coral?.habitat ?
+                            <ListItem>
+                                <ListIcon as={GiAlgae}/>
+                                <span>
+                                    <strong>Habitat: </strong>
+                                    <em>{coral.habitat}</em>
+                                </span>
+                            </ListItem> : ''}
+                        {coral?.abundance ?
+                            <ListItem>
+                                <ListIcon as={GiMeshNetwork}/>
+                                <span>
+                                    <strong>Abundance: </strong>
+                                    <em>{coral.abundance}</em>
+                                </span>
+                            </ListItem> : ''}
                         <br/>
-                        <ListItem>
-                            <ListIcon as={GrNotes}/>
-                            <span>
-                                <strong>Taxonomic Note: </strong>
-                                <em>{coral.taxonomic_note}</em>
-                            </span>
-                        </ListItem>
+                        {coral?.note ?
+                            <ListItem>
+                                <ListIcon as={GrNotes}/>
+                                <span>
+                                    <strong>Taxonomic Note: </strong>
+                                    <em>{coral.note}</em>
+                                </span>
+                            </ListItem> : ''}
                     </List>
                 </Box>
                 <Box>
@@ -189,20 +189,25 @@ function MediaCarousel() {
     )
 }
 
-function UpdateButton({coral}: { coral: any }) {
+function UpdateButton({coral, user}: { coral: any, user: any }) {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            characters: coral.characters,
-            color: coral.color,
-            similar: coral.similar,
-            habitat: coral.habitat,
-            abundance: coral.abundance,
-            taxonomic_note: coral.taxonomic_note,
+            coralSpeciesId: coral.coralSpeciesId,
+            author: user?.account.accountId,
+            status: 1,
+            characters: coral.characters ? coral.characters : '',
+            color: coral.color ? coral.color : '',
+            similar: coral.similar ? coral.similar : '',
+            habitat: coral.habitat ? coral.habitat : '',
+            abundance: coral.abundance ? coral.abundance : '',
+            taxonomic_note: coral.note ? coral.note : '',
         },
         onSubmit: (values) => {
-            console.log(values);
-            onClose();
+            SpeciesDraftServices.create(values).then(() => {
+                onClose();
+            });
         },
     });
 
@@ -211,16 +216,15 @@ function UpdateButton({coral}: { coral: any }) {
             <Button variant={'solid'} leftIcon={<EditIcon/>}
                     size={'sm'} onClick={onOpen}>
                 Update</Button>
-            <Modal isOpen={isOpen} onClose={onClose} size={'xl'} scrollBehavior={'inside'}>
+            <Modal isOpen={isOpen} onClose={onClose} size={'xl'} scrollBehavior={'inside'} closeOnOverlayClick={false}>
                 <ModalOverlay/>
                 <ModalContent>
                     <ModalHeader>
-                        <Text fontSize={'3xl'} color={'#005A80'} fontWeight={'bold'}>{coral.name}</Text>
-                        {coral.author}
+                        <Text fontSize={'3xl'} color={'#005A80'} fontWeight={'bold'}>{coral.scientificName}</Text>
+                        {coral.authorCitation}
                     </ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
-                        <Text fontSize={'sm'}>{coral.parent.name} ({coral.parent.author})</Text>
                         <form>
                             <Stack spacing={4} mt={4}>
                                 <FormControl id="characters">
@@ -287,7 +291,7 @@ function UpdateButton({coral}: { coral: any }) {
                         </form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button bg='#005A80' color={'white'} mr={3} onClick={() => formik.handleSubmit}>
+                        <Button colorScheme={'blue'} onClick={() => formik.handleSubmit()}>
                             Submit
                         </Button>
                     </ModalFooter>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
     Button,
     Container, FormControl, FormErrorMessage, FormLabel,
@@ -11,99 +11,107 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import {AddIcon, DeleteIcon, EditIcon} from "@chakra-ui/icons";
-import {Table, Thead, Tbody, Tr, Th, Td, chakra} from '@chakra-ui/react'
-import {TriangleDownIcon, TriangleUpIcon} from '@chakra-ui/icons'
 import {useTable, useSortBy} from 'react-table'
 import {useFormik} from "formik";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
-import Datatable from "../../components/Datatable";
+import Datatable, {OptionFilter} from "../../components/datatable";
+import AlbumServices from "../../services/albumServices";
+import AreaServices from "../../services/areaServices";
+import DivingSessionServices from "../../services/divingSessionServices";
 
 export default function UserGallery() {
+    const [albums, setAlbums] = React.useState<any[]>([]);
+    const [areas, setAreas] = React.useState<any[]>([]);
+    const [sessions, setSessions] = React.useState<any[]>([]);
+
+    useEffect(() => {
+        loadOptions();
+        loadAlbumms();
+    }, []);
+
+
+    const loadAlbumms = () => {
+        AlbumServices.getByAuthor(1).then(response => {
+            setAlbums(response.data);
+        });
+    }
+
+    const loadOptions = () => {
+        AreaServices.getAll().then(response => {
+            setAreas(response.data);
+        });
+        DivingSessionServices.getAll().then(response => {
+            setSessions(response.data);
+        });
+    }
+
+    const data = albums.map((album: any) => {
+        return {
+            id: album.albumId,
+            name: album.albumName,
+            area: areas.find(area => area.areaId == album.areaId)?.areaName,
+            session: sessions.find(session => session.divingSessionId == album.divingSessionId)?.divingSessionName,
+            date: album.createdTime,
+            album: album
+        }
+    });
+
+    const columns = [
+        {
+            Header: 'Album',
+            accessor: 'name' as const,
+            Cell: ({row}: { row: any }) =>
+                <Link as={RouterLink} color={'blue.500'} to={`${row.original.id}`}>{row.original.name}</Link>,
+        },
+        {
+            Header: 'Area',
+            accessor: 'area' as const,
+            Filter: OptionFilter,
+            filter: 'includes',
+        },
+        {
+            Header: 'Session',
+            accessor: 'session' as const,
+            Filter: OptionFilter,
+            filter: 'includes',
+        },
+        {
+            Header: 'Created date',
+            accessor: 'date' as const,
+            disableFilters: true,
+            Cell: (props: any) => <>{(new Date(props.value)).toLocaleString()}</>
+        },
+        {
+            id: 'edit-button',
+            Cell: ({row}: { row: any }) =>
+                <HStack spacing={2}>
+                    <AlbumForm album={row.original.album} areas={areas} sessions={sessions}/>
+                    <AlbumDelete album={row.original.album}/>
+                </HStack>,
+        },
+    ];
+
     return (
         <Container maxW={"container.xl"} p={2}>
             <Heading as='h2' size='xl'>
-                My Gallery <AlbumForm/>
+                My Gallery <AlbumForm areas={areas} sessions={sessions}/>
             </Heading>
-            <AlbumTable/>
+            <Datatable columns={columns} data={data}/>
         </Container>
     );
 }
 
-function AlbumTable() {
-    const data = React.useMemo(
-        () => [
-            {
-                name: 'First album',
-                area: 'First album',
-                session: 25.4,
-                date: '2020-01-01',
-            },
-            {
-                name: 'Second album',
-                area: 'Second album',
-                session: 30.48,
-                date: '2020-01-02',
-            },
-            {
-                name: 'Second album',
-                area: 'Thir',
-                session: 0.91444,
-                date: '2020-01-03',
-            },
-        ],
-        [],
-    )
-
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: 'Album',
-                accessor: 'name' as const,
-                Cell: ({row}: { row: any }) =>
-                    <Link as={RouterLink} color={'blue.500'} to={`${row.original.id}`}>{row.original.name}</Link>,
-            },
-            {
-                Header: 'Area',
-                accessor: 'area' as const,
-            },
-            {
-                Header: 'Session',
-                accessor: 'session' as const,
-            },
-            {
-                Header: 'Created date',
-                accessor: 'date' as const,
-            },
-            {
-                id: 'edit-button',
-                Cell: ({row}: { row: any }) =>
-                    <HStack spacing={2}>
-                        <AlbumForm album={row.original}/>
-                        <AlbumDelete album={row.original}/>
-                    </HStack>,
-            },
-        ],
-        [],
-    )
-
-    const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow} =
-        useTable({columns, data}, useSortBy);
-    const navigate = useNavigate();
-
-    return (
-        <Datatable columns={columns} data={data}/>
-    )
-}
-
-
-export function AlbumForm({ album, reload = () => {}}: { album?: any, reload?: () => void }) {
+export function AlbumForm({
+                              album, areas, sessions, reload = () => {
+    }
+                          }: { album?: any, areas: any[], sessions: any[], reload?: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure()
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            name: album ? album.name : '',
-            area: album ? album.area : '',
-            session: album ? album.session : '',
-            date: album ? album.date : '',
+            albumName: album ? album.albumName : '',
+            areaId: album ? album.areaId : '',
+            divingSessionId: album ? album.divingSessionId : 0,
         },
         onSubmit: (values) => {
             console.log(values);
@@ -113,9 +121,9 @@ export function AlbumForm({ album, reload = () => {}}: { album?: any, reload?: (
     return (
         <>
             <IconButton aria-label='Add to friends' icon={album ? <EditIcon/> : <AddIcon/>} color={'#005A80'}
-                        onClick={onOpen} size={'sm'}/>
+                        onClick={onOpen}/>
 
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
                 <ModalOverlay/>
                 <ModalContent>
                     <ModalHeader>{album ? 'Edit album info' : 'New album'}</ModalHeader>
@@ -123,34 +131,44 @@ export function AlbumForm({ album, reload = () => {}}: { album?: any, reload?: (
                     <ModalBody>
                         <form>
                             <Stack spacing={4}>
-                                <FormControl id="name" isRequired>
+                                <FormControl id="albumName" isRequired>
                                     <FormLabel>Name</FormLabel>
-                                    <Input value={formik.values.name} onChange={formik.handleChange}
-                                           placeholder={'Album name'}/>
-                                    <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+                                    <Input value={formik.values.albumName} onChange={formik.handleChange}
+                                           onBlur={formik.handleBlur} placeholder={'Album name'}/>
+                                    <FormErrorMessage>{formik.errors.albumName}</FormErrorMessage>
                                 </FormControl>
-                                <FormControl id="area">
+                                <FormControl id="areaId">
                                     <FormLabel>Area</FormLabel>
-                                    <Select placeholder='Select option'>
-                                        <option value='option1'>Option 1</option>
-                                        <option value='option2'>Option 2</option>
-                                        <option value='option3'>Option 3</option>
+                                    <Select placeholder='Select option' value={formik.values.areaId} onBlur={formik.handleBlur}
+                                            onChange={(e) => {
+                                                formik.handleChange(e);
+                                                formik.setFieldValue('divingSessionId', '');
+                                            }}>
+                                        {areas.map((area: any) => (
+                                            <option key={area.areaId} value={area.areaId}>{area.areaName}</option>
+                                        ))}
                                     </Select>
+                                    <FormErrorMessage>{formik.errors.areaId}</FormErrorMessage>
                                 </FormControl>
-                                <FormControl id="session">
+                                <FormControl id="divingSessionId">
                                     <FormLabel>Diving Session</FormLabel>
-                                    <Select placeholder='Select option'>
-                                        <option value='option1'>Option 1</option>
-                                        <option value='option2'>Option 2</option>
-                                        <option value='option3'>Option 3</option>
+                                    <Select placeholder='Select option' value={formik.values.divingSessionId}
+                                            onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                                        {
+                                            sessions.map((session: any) => (
+                                                session.areaId == formik.values.areaId ?
+                                                    <option key={session.divingSessionId}
+                                                            value={session.divingSessionId}>{session.divingSessionName}</option> : ''))
+                                        }
                                     </Select>
+                                    <FormErrorMessage>{formik.errors.divingSessionId}</FormErrorMessage>
                                 </FormControl>
                             </Stack>
                         </form>
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button bg='#005A80' color={'white'} mr={3} onClick={() => formik.handleSubmit}>
+                        <Button colorScheme={'blue'} onClick={() => formik.handleSubmit()}>
                             Create
                         </Button>
                     </ModalFooter>
@@ -160,12 +178,15 @@ export function AlbumForm({ album, reload = () => {}}: { album?: any, reload?: (
     );
 }
 
-export function AlbumDelete({ album, reload = () => {}}: { album?: any, reload?: () => void }) {
+export function AlbumDelete({
+                                album, reload = () => {
+    }
+                            }: { album?: any, reload?: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure()
     return (
         <>
             <IconButton aria-label='Add to friends' icon={<DeleteIcon/>} colorScheme={'red'}
-                        onClick={onOpen} size={'sm'}/>
+                        onClick={onOpen}/>
 
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay/>
@@ -177,7 +198,7 @@ export function AlbumDelete({ album, reload = () => {}}: { album?: any, reload?:
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme={'red'} mr={3} onClick={() => {
+                        <Button colorScheme={'red'} onClick={() => {
                             reload();
                             onClose();
                         }}>
