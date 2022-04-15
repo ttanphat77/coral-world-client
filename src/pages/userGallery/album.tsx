@@ -10,6 +10,7 @@ import AlbumServices from "../../services/albumServices";
 import UserMediaServices from "../../services/userMediaServices";
 import storage from "../../services/firebaseServices";
 import video_file from "../../assets/video_file.png";
+import {Simulate} from "react-dom/test-utils";
 
 export default function Album() {
 
@@ -107,21 +108,20 @@ export default function Album() {
             <Divider my={4}/>
             <SimpleGrid columns={[1, 2, 3, 5]} spacing={4}>
                 {medias?.map((media: any) => (
-                    <Media media={media} deleteMedia={deleteFile} updateCaption={updateCaption}/>
+                    <Media data={media} deleteMedia={deleteFile} updateCaption={updateCaption}/>
                 ))}
             </SimpleGrid>
         </Container>);
 }
 
-function Media({media, updateCaption, deleteMedia}: { media: any, updateCaption: any, deleteMedia: any }) {
+function Media({data, updateCaption, deleteMedia}: { data: any, updateCaption: any, deleteMedia: any }) {
 
     const {isOpen: isViewerOpen, onClose: onViewerClose, onOpen: onViewerOpen} = useDisclosure();
     const [url, setUrl] = React.useState<string>();
     const [isShowDetect, setIsShowDetect] = React.useState<boolean>();
+    const [media, setMedia] = React.useState<any>(data);
 
     useEffect(() => {
-        setUrl(media.mediaURL);
-        setIsShowDetect(false);
     }, []);
 
 
@@ -135,6 +135,14 @@ function Media({media, updateCaption, deleteMedia}: { media: any, updateCaption:
         }
     };
 
+    const loadImage = () => {
+        UserMediaServices.get(data.userMediaId).then((res: any) => {
+            setMedia(res.data);
+            setUrl(res.data.mediaURL);
+            setIsShowDetect(false);
+        });
+    };
+
     return (
         <Box w={'100%'}
              position={'relative'}
@@ -145,15 +153,15 @@ function Media({media, updateCaption, deleteMedia}: { media: any, updateCaption:
             <MediaDelete media={media} deleteMedia={deleteMedia} />
             <AspectRatio w={'100%'} ratio={1}>
                 <Box borderRadius={10}
-                     onClick={onViewerOpen}>
+                     onClick={() => {onViewerOpen();loadImage();}}>
                     <Image
                         cursor={'pointer'}
                         boxSize={'100%'}
                         objectFit={'cover'}
-                        src={media.isImage ? media.mediaURL : video_file}/>
+                        src={media?.isImage ? media?.mediaURL : video_file}/>
                 </Box>
             </AspectRatio>
-            <Textarea w={'100%'} variant={'filled'} mt={2} placeholder={'Description (optional)'} defaultValue={media.caption}
+            <Textarea w={'100%'} variant={'filled'} mt={2} placeholder={'Description (optional)'} defaultValue={media?.caption}
                       onBlur={(e: any) => updateCaption(media, e.target.value)}
                       onKeyDown={(e: any) => {
                           if (e.key === 'Enter') {
@@ -173,7 +181,7 @@ function Media({media, updateCaption, deleteMedia}: { media: any, updateCaption:
                             <Box height={['50vh', '50vh', '70vh']} bg={'black'} alignContent={'center'}
                                  display={'flex'}>
                                 {
-                                    media.isImage ?
+                                    media?.isImage ?
                                         <Image
                                             boxSize={'100%'}
                                             objectFit={'contain'}
@@ -188,12 +196,12 @@ function Media({media, updateCaption, deleteMedia}: { media: any, updateCaption:
                                     <Text>
                                         <strong>Description: </strong>
                                         <em>
-                                            {media.caption}</em>
+                                            {media?.caption}</em>
                                     </Text>
                                     <Text>
                                         <strong>Coral detect: </strong>
                                         {
-                                            media.isDetected ?
+                                            media?.isDetected ?
                                                 <Button onClick={toggleDetectImage}>
                                                     {!isShowDetect ? 'Show detected' : 'Show origin'}
                                                 </Button> :
