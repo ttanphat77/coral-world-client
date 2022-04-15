@@ -26,9 +26,9 @@ interface LinkItemProps {
     href: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'Factsheet request', href: '/admin/species' },
-    { name: 'Media request', href: '/admin/species' },
-    { name: 'Labeled image', href: '/admin/species'},
+    { name: 'Factsheet request', href: '/admin/draft' },
+    { name: 'Media request', href: '/admin/species-media' },
+    { name: 'Labeled image', href: '/admin/label-image'},
     { name: 'Species', href: '/admin/species' },
     { name: 'Genus', href: '/admin/genus' },
     { name: 'Diving session', href: '/admin/divingSession' },

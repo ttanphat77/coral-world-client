@@ -20,6 +20,9 @@ import GenusManagement from "./pages/admin/genusManagement";
 import DivingSessionManagement from "./pages/admin/divingSessionManagement";
 import Todofactsheet from "./pages/contributeMangement/todofactsheet";
 import ImageLabeling from "./pages/contributeMangement/imageLabeling";
+import SpeciesDraftManagement from "./pages/admin/speciesDraftManagement";
+import SpeciesMediaManagement from "./pages/admin/speciesMediaManagement";
+import LabelImageManagement from "./pages/admin/labeledImageManagement";
 
 export const App = () => {
     const auth = useAuth();
@@ -55,6 +58,9 @@ export const App = () => {
                             <Route path="species" element={<SpeciesManagement />} />
                             <Route path="genus" element={<GenusManagement />} />
                             <Route path="divingSession" element={<DivingSessionManagement />} />
+                            <Route path="draft" element={<SpeciesDraftManagement />} />
+                            <Route path="species-media" element={<SpeciesMediaManagement />} />
+                            <Route path="label-image" element={<LabelImageManagement />} />
                         </Route>
                     </Route>
                 </Routes>

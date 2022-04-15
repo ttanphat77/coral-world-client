@@ -12,6 +12,9 @@ const SpeciesMediaServices = {
     getByAuthor: (id: any) => {
         return http.get(apiUrl + 'GetAllSpeciesMediasByUser?id=' + id)
     },
+    getBySpecies: (id: any) => {
+        return http.get(apiUrl + 'GetAllApprovedSpeciesMediasByCoral?coralId=' + id)
+    },
     create: (data: any) => {
         return http.post(apiUrl, data)
     },

@@ -60,8 +60,7 @@ export default function MediaContributeTable() {
         m.species = draftSpecies ? draftSpecies : null;
         return {
             url: m.mediaURL,
-            species: draftSpecies ? draftSpecies.scientificName : '',
-            author: draftSpecies ? draftSpecies.authorCitation : '',
+            species: draftSpecies ? draftSpecies.scientificName  + ' (' + draftSpecies.authorCitation + ')': '',
             status: mediaStatus.find(s => s.value == m.status)?.label,
             date: m.createdTime,
             media: m
@@ -85,10 +84,6 @@ export default function MediaContributeTable() {
             {
                 Header: 'Species',
                 accessor: 'species' as const,
-            },
-            {
-                Header: 'Author citation',
-                accessor: 'author' as const,
             },
             {
                 Header: 'Status',
@@ -175,7 +170,7 @@ function MediaViewer({media}: { media: any }) {
                                     height={'100%'}
                                     width={'100%'}
                                     objectFit={'contain'}
-                                    src={'https://picsum.photos/1000/700'}/>
+                                    src={media?.mediaURL}/>
                             </Box>
                             <Box>
                                 <form onSubmit={formik.handleSubmit}>
@@ -207,7 +202,7 @@ function MediaViewer({media}: { media: any }) {
     )
 }
 
-export function DeleteMedia({media, reload = () => {}}: { media: any, reload?: () => void }) {
+function DeleteMedia({media, reload = () => {}}: { media: any, reload?: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure();
 
     const deleteMedia = () => {

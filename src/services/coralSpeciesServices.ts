@@ -15,6 +15,10 @@ const CoralSpeciesServices = {
         return http.get(apiUrl + 'GetAllEmptyCorals');
     },
 
+    getByGenus: (genusId: any) => {
+        return http.get(apiUrl + 'GetAllCoralsByGenus?id=' + genusId);
+    },
+
     create: (data: any) => {
         return http.post(apiUrl, data);
     },

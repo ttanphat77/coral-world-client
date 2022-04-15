@@ -66,8 +66,7 @@ export default function DraftTable() {
         const draftSpecies = species.find((s: any) => s.coralSpeciesId === d.coralSpeciesId);
         d.species = draftSpecies
         return {
-            name: draftSpecies ? draftSpecies.scientificName : '',
-            author: draftSpecies ? draftSpecies.authorCitation : '',
+            name: draftSpecies ? draftSpecies.scientificName  + ' (' + draftSpecies.authorCitation + ')': '',
             status: draftStatus.find((s: any) => s.value == d.status)?.label,
             date: d.createdTime,
             draft: d
@@ -79,10 +78,6 @@ export default function DraftTable() {
             {
                 Header: 'Species',
                 accessor: 'name' as const,
-            },
-            {
-                Header: 'Author citation',
-                accessor: 'author' as const,
             },
             {
                 Header: 'Status',

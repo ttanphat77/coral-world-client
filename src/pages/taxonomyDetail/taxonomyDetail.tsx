@@ -2,9 +2,9 @@ import {
     Box, Modal, ModalOverlay, ModalContent,
     ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
     Container, Divider, Grid, GridItem, Text, Heading,
-    Link, List, ListIcon, ListItem,
+    Link, List, ListIcon, ListItem, Image,
     SimpleGrid, Button, useDisclosure, Flex, Spacer, Stack,
-    FormControl, FormLabel, Input, FormErrorMessage, Textarea,
+    FormControl, FormLabel, Input, FormErrorMessage, Textarea, Select, Center,
 } from "@chakra-ui/react";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
@@ -22,6 +22,9 @@ import CoralSpeciesServices from "../../services/coralSpeciesServices";
 import CoralGenusServices from "../../services/coralGenusServices";
 import {useAuth} from "../../hooks/useAuth";
 import SpeciesDraftServices from "../../services/speciesDraftServices";
+import storage from "../../services/firebaseServices";
+import UserMediaServices from "../../services/userMediaServices";
+import SpeciesMediaServices from "../../services/speciesMediaService";
 
 export default function TaxonomyDetail() {
     let {id} = useParams();
@@ -45,6 +48,9 @@ export default function TaxonomyDetail() {
                 })
             }
         });
+        SpeciesMediaServices.getBySpecies(id).then(res => {
+            setMedias(res.data);
+        });
     }
 
     return (
@@ -53,9 +59,7 @@ export default function TaxonomyDetail() {
             <Flex mb={2}>
                 <UpdateButton coral={coral} user={user}/>
                 <Spacer/>
-                <Button variant={'solid'} leftIcon={<BiImageAdd/>}
-                        size={'sm'}>
-                    Contribute</Button>
+                <ContributeImage coral={coral} user={user}/>
             </Flex>
             }
             <SimpleGrid columns={[1, 1, 2]} gap={4}>
@@ -127,62 +131,69 @@ export default function TaxonomyDetail() {
                     </List>
                 </Box>
                 <Box>
-                    <MediaCarousel/>
+                    <MediaCarousel media={medias}/>
                 </Box>
             </SimpleGrid>
         </Container>
     );
 }
 
-function MediaCarousel() {
-    const images = [
-        {
-            original: 'https://picsum.photos/500/1500',
-            thumbnail: 'https://picsum.photos/500/700',
-            description: 'Acropora abrolhosensis Small colony. Indonesia Photograph: Lyndon DeVantier',
-            originalHeight: 1000,
-        },
-        {
-            original: 'https://picsum.photos/id/1015/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1015/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1019/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1015/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1015/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1019/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1015/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1015/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1019/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1015/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1015/250/150/',
-            description: 'Big Buck Bunny',
-        },
-        {
-            original: 'https://picsum.photos/id/1019/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/250/150/',
-            description: 'Big Buck Bunny',
-        },
-    ];
+function MediaCarousel({media} : {media: any[]}) {
+    const images = media.map((m: any) => {
+        return {
+            original: m.mediaURL,
+            thumbnail: m.mediaURL,
+            description: m.caption,
+        }
+    });
+    // const images = [
+    //     {
+    //         original: 'https://picsum.photos/500/1500',
+    //         thumbnail: 'https://picsum.photos/500/700',
+    //         description: 'Acropora abrolhosensis Small colony. Indonesia Photograph: Lyndon DeVantier',
+    //         // originalHeight: 1000,
+    //     },
+    //     {
+    //         original: 'https://picsum.photos/id/1015/1000/600/',
+    //         thumbnail: 'https://picsum.photos/id/1015/250/150/',
+    //         description: 'Big Buck Bunny',
+    //     },
+    //     {
+    {/*        original: 'https://picsum.photos/id/1019/1000/600/',*/}
+    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
+    //         description: 'Big Buck Bunny',
+    //     },
+    //     {
+    //         original: 'https://picsum.photos/id/1015/1000/600/',
+    //         thumbnail: 'https://picsum.photos/id/1015/250/150/',
+    //         description: 'Big Buck Bunny',
+    //     },
+    //     {
+    //         original: 'https://picsum.photos/id/1019/1000/600/',
+    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
+    //         description: 'Big Buck Bunny',
+    //     },
+    //     {
+    {/*        original: 'https://picsum.photos/id/1015/1000/600/',*/}
+    {/*        thumbnail: 'https://picsum.photos/id/1015/250/150/',*/}
+    {/*        description: 'Big Buck Bunny',*/}
+    //     },
+    {/*    {*/}
+    //         original: 'https://picsum.photos/id/1019/1000/600/',
+    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
+    {/*        description: 'Big Buck Bunny',*/}
+    {/*    },*/}
+    //     {
+    //         original: 'https://picsum.photos/id/1015/1000/600/',
+    //         thumbnail: 'https://picsum.photos/id/1015/250/150/',
+    //         description: 'Big Buck Bunny',
+    //     },
+    //     {
+    //         original: 'https://picsum.photos/id/1019/1000/600/',
+    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
+    //         description: 'Big Buck Bunny',
+    //     },
+    // ];
     return (
         <ImageGallery items={images}
                       showPlayButton={false} showNav={false}/>
@@ -292,6 +303,126 @@ function UpdateButton({coral, user}: { coral: any, user: any }) {
                     </ModalBody>
                     <ModalFooter>
                         <Button colorScheme={'blue'} onClick={() => formik.handleSubmit()}>
+                            Submit
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
+    )
+}
+
+function ContributeImage({coral, user}: { coral: any, user: any }) {
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    const [images, setImages] = useState<any[]>([]);
+
+    const inputFileRef = React.useRef<HTMLInputElement>(null);
+
+    const openFileInput = () => {
+        if (inputFileRef.current) {
+            inputFileRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e: any) => {
+        const files = e.target.files;
+        if (files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = (e: any) => {
+                    setImages(images => [...images, {
+                        name: file.name,
+                        src: e.target.result,
+                        description: '',
+                        file: file
+                    }]);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    };
+
+    const resetInputFile = () => {
+        setImages([])
+    };
+
+    const handleSubmit = () => {
+        images.forEach(image => {
+            const file = image.file;
+            const name = file.name + '_' + new Date().getTime();
+            storage.ref(`media/${name}`).put(file)
+                .on('state_changed', (snapshot: any) => {
+                    // Observe state change events such as progress, pause, and resume
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    // const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    // console.log('Upload is ' + progress + '% done');
+                    // switch (snapshot.state) {
+                    //     case 'paused': // or 'paused'
+                    //         console.log('Upload is paused');
+                    //         break;
+                    //     case 'running': // or 'running'
+                    //         console.log('Upload is running');
+                    //         break;
+                    // }
+                }, (error: any) => {
+                    // Handle unsuccessful uploads
+                }, () => {
+                    // Handle successful uploads on complete
+                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                    storage.ref(`media/${name}`).getDownloadURL().then((url: any) => {
+                        SpeciesMediaServices.create({
+                            coralSpeciesId: coral.coralSpeciesId,
+                            isImage: true,
+                            caption: image.description,
+                            status: 1,
+                            createdBy: user?.account.accountId,
+                            mediaURL: url,
+                        }).then((res: any) => {
+                        });
+                    });
+                });
+        })
+    };
+
+    return (
+        <>
+            <Button variant={'solid'} leftIcon={<BiImageAdd/>}
+                    size={'sm'} onClick={() => {
+                onOpen();
+                resetInputFile();
+            }}>
+                Contribute</Button>
+            <Modal isOpen={isOpen} onClose={onClose} size={'xl'} scrollBehavior={'inside'} closeOnOverlayClick={false}>
+                <ModalOverlay/>
+                <ModalContent>
+                    <ModalHeader>
+                        Contribute image for {coral.scientificName}
+                        <Input type="file" multiple ref={inputFileRef} accept={'image/*'} display={'none'}
+                               onChange={handleFileChange}/>
+                        <Button onClick={openFileInput} ml={4}>Upload</Button>
+                    </ModalHeader>
+                    <ModalCloseButton/>
+                    <ModalBody>
+                        <Stack mt={2} spacing={2}>
+                            {images.map((image: any, index: number) => (
+                                <Flex>
+                                    <Image boxSize='100px' objectFit='cover' src={image.src} alt={image.name} mr={4}/>
+                                    <Textarea value={image.description} height={'100px'}
+                                              onChange={(e: any) => {
+                                                  setImages(images => [...images.slice(0, index), {
+                                                      ...images[index],
+                                                      description: e.target.value
+                                                  }, ...images.slice(index + 1)])
+                                              }}
+                                              placeholder={'Enter description'}/>
+                                </Flex>
+                            ))
+                            }
+                        </Stack>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button colorScheme='blue' disabled={images.length == 0} onClick={handleSubmit}>
                             Submit
                         </Button>
                     </ModalFooter>

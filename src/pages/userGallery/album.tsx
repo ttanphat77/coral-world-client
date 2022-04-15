@@ -51,7 +51,8 @@ export default function Album() {
         if (files) {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                storage.ref(`usermedia/${album.albumName}/${file.name}`).put(file)
+                const name = file.name + '_' + new Date().getTime();
+                storage.ref(`usermedia/${album.albumName}/${name}`).put(file)
                     .on('state_changed', (snapshot: any) => {
                         // Observe state change events such as progress, pause, and resume
                         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
@@ -70,20 +71,21 @@ export default function Album() {
                     }, () => {
                         // Handle successful uploads on complete
                         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                        storage.ref(`usermedia/${album.albumName}/${file.name}`).getDownloadURL().then((url: any) => {
+                        storage.ref(`usermedia/${album.albumName}/${name}`).getDownloadURL().then((url: any) => {
                             UserMediaServices.create({
                                 albumId: album.albumId,
                                 isImage: file.type.includes('image'),
                                 caption: "",
                                 mediaURL: url,
                             }).then((res: any) => {
-                                AlbumServices.get(id).then((res: any) => {
+                                UserMediaServices.getByAlbum(id).then((res: any) => {
                                     res.data.find((media: any) => {
                                         if (media.mediaURL === url) {
                                             UserMediaServices.triggerDetect(media.userMediaId);
                                         }
                                     });
-                                    setAlbum(res.data);
+                                    setMedias([]);
+                                    setMedias(res.data);
                                 });
                             });
                         });
