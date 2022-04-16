@@ -146,54 +146,6 @@ function MediaCarousel({media} : {media: any[]}) {
             description: m.caption,
         }
     });
-    // const images = [
-    //     {
-    //         original: 'https://picsum.photos/500/1500',
-    //         thumbnail: 'https://picsum.photos/500/700',
-    //         description: 'Acropora abrolhosensis Small colony. Indonesia Photograph: Lyndon DeVantier',
-    //         // originalHeight: 1000,
-    //     },
-    //     {
-    //         original: 'https://picsum.photos/id/1015/1000/600/',
-    //         thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    //         description: 'Big Buck Bunny',
-    //     },
-    //     {
-    {/*        original: 'https://picsum.photos/id/1019/1000/600/',*/}
-    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    //         description: 'Big Buck Bunny',
-    //     },
-    //     {
-    //         original: 'https://picsum.photos/id/1015/1000/600/',
-    //         thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    //         description: 'Big Buck Bunny',
-    //     },
-    //     {
-    //         original: 'https://picsum.photos/id/1019/1000/600/',
-    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    //         description: 'Big Buck Bunny',
-    //     },
-    //     {
-    {/*        original: 'https://picsum.photos/id/1015/1000/600/',*/}
-    {/*        thumbnail: 'https://picsum.photos/id/1015/250/150/',*/}
-    {/*        description: 'Big Buck Bunny',*/}
-    //     },
-    {/*    {*/}
-    //         original: 'https://picsum.photos/id/1019/1000/600/',
-    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    {/*        description: 'Big Buck Bunny',*/}
-    {/*    },*/}
-    //     {
-    //         original: 'https://picsum.photos/id/1015/1000/600/',
-    //         thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    //         description: 'Big Buck Bunny',
-    //     },
-    //     {
-    //         original: 'https://picsum.photos/id/1019/1000/600/',
-    //         thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    //         description: 'Big Buck Bunny',
-    //     },
-    // ];
     return (
         <ImageGallery items={images}
                       showPlayButton={false} showNav={false}/>

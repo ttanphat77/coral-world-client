@@ -12,6 +12,9 @@ const SpeciesDraftServices = {
     getByAuthor: (id: any) => {
         return http.get(apiUrl + 'GetAllSpeciesDraftsByAccountId?id=' + id)
     },
+    approve: (id: any, status: any) => {
+        return http.put(apiUrl + 'ApproveRejectDraft?id=' + id + '&status=' + status)
+    },
     create: (data: any) => {
         return http.post(apiUrl, data)
     },

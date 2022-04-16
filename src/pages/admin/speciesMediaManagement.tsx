@@ -5,7 +5,7 @@ import {
     Heading,
     HStack,
     IconButton,
-    Image,
+    Image, Link,
     Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader,
     ModalOverlay, SimpleGrid, Stack, Text,
     useDisclosure
@@ -14,7 +14,8 @@ import Datatable, {OptionFilter} from "../../components/datatable";
 import AccountServices from "../../services/accountServices";
 import CoralSpeciesServices from "../../services/coralSpeciesServices";
 import SpeciesMediaServices from "../../services/speciesMediaService";
-import {DeleteIcon, ViewIcon} from "@chakra-ui/icons";
+import {DeleteIcon, ExternalLinkIcon, ViewIcon} from "@chakra-ui/icons";
+import {Link as RouterLink} from "react-router-dom";
 
 const mediaStatus = [
     {
@@ -87,7 +88,11 @@ export default function SpeciesMediaManagement() {
             },
             {
                 Header: 'Species',
-                accessor: 'name' as const,
+                accessor: 'media',
+                Cell: (props: any) =>
+                    <Link as={RouterLink} to={'/taxonomy/' + props.value?.species?.coralSpeciesId} target={'_blank'}>
+                        {props.value?.species?.scientificName} ({props.value?.species?.authorCitation}) <ExternalLinkIcon mx='2px'/>
+                    </Link>
             },
             {
                 Header: 'Author',

@@ -18,20 +18,23 @@ import Datatable, {OptionFilter} from "../../components/datatable";
 import AlbumServices from "../../services/albumServices";
 import AreaServices from "../../services/areaServices";
 import DivingSessionServices from "../../services/divingSessionServices";
+import * as Yup from "yup";
+import {useAuth} from "../../hooks/useAuth";
 
 export default function UserGallery() {
     const [albums, setAlbums] = React.useState<any[]>([]);
     const [areas, setAreas] = React.useState<any[]>([]);
     const [sessions, setSessions] = React.useState<any[]>([]);
+    const user = useAuth().user;
 
     useEffect(() => {
         loadOptions();
-        loadAlbumms();
+        loadAlbums();
     }, []);
 
 
-    const loadAlbumms = () => {
-        AlbumServices.getByAuthor(1).then(response => {
+    const loadAlbums = () => {
+        AlbumServices.getByAuthor(user?.account?.accountId).then(response => {
             setAlbums(response.data);
         });
     }
@@ -85,8 +88,8 @@ export default function UserGallery() {
             id: 'edit-button',
             Cell: ({row}: { row: any }) =>
                 <HStack spacing={2}>
-                    <AlbumForm album={row.original.album} areas={areas} sessions={sessions}/>
-                    <AlbumDelete album={row.original.album}/>
+                    <AlbumForm album={row.original.album} areas={areas} sessions={sessions} reload={loadAlbums}/>
+                    <AlbumDelete album={row.original.album} reload={loadAlbums}/>
                 </HStack>,
         },
     ];
@@ -94,28 +97,51 @@ export default function UserGallery() {
     return (
         <Container maxW={"container.xl"} p={2}>
             <Heading as='h2' size='xl'>
-                My Gallery <AlbumForm areas={areas} sessions={sessions}/>
+                My Gallery <AlbumForm areas={areas} sessions={sessions} reload={loadAlbums}/>
             </Heading>
             <Datatable columns={columns} data={data}/>
         </Container>
     );
 }
 
+const validationSchema = Yup.object({
+    albumName: Yup.string()
+        .required('Album name is required'),
+    areaId: Yup.number()
+        .required('Area is required'),
+});
+
 export function AlbumForm({
                               album, areas, sessions, reload = () => {
     }
                           }: { album?: any, areas: any[], sessions: any[], reload?: () => void }) {
+    const user = useAuth().user;
+
     const {isOpen, onOpen, onClose} = useDisclosure()
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
+            albumId: album ? album.albumId : 0,
+            accountId: user?.account?.accountId,
             albumName: album ? album.albumName : '',
             areaId: album ? album.areaId : '',
-            divingSessionId: album ? album.divingSessionId : 0,
+            divingSessionId: album ? album.divingSessionId : '',
         },
+        validationSchema,
         onSubmit: (values) => {
-            console.log(values);
-            reload();
+            if (formik.isValid) {
+                if (album) {
+                    AlbumServices.update(values).then(() => {
+                        onClose();
+                        reload();
+                    });
+                } else {
+                    AlbumServices.create(values).then(() => {
+                        onClose();
+                        reload();
+                    });
+                }
+            }
         },
     })
     return (
@@ -131,15 +157,18 @@ export function AlbumForm({
                     <ModalBody>
                         <form>
                             <Stack spacing={4}>
-                                <FormControl id="albumName" isRequired>
+                                <FormControl id="albumName" isRequired
+                                             isInvalid={Boolean(formik.touched?.albumName && formik.errors?.albumName)}>
                                     <FormLabel>Name</FormLabel>
                                     <Input value={formik.values.albumName} onChange={formik.handleChange}
                                            onBlur={formik.handleBlur} placeholder={'Album name'}/>
                                     <FormErrorMessage>{formik.errors.albumName}</FormErrorMessage>
                                 </FormControl>
-                                <FormControl id="areaId">
+                                <FormControl id="areaId" isRequired
+                                             isInvalid={Boolean(formik.touched?.areaId && formik.errors?.areaId)}>
                                     <FormLabel>Area</FormLabel>
-                                    <Select placeholder='Select option' value={formik.values.areaId} onBlur={formik.handleBlur}
+                                    <Select placeholder='Select option' value={formik.values.areaId}
+                                            onBlur={formik.handleBlur}
                                             onChange={(e) => {
                                                 formik.handleChange(e);
                                                 formik.setFieldValue('divingSessionId', '');
@@ -169,7 +198,7 @@ export function AlbumForm({
 
                     <ModalFooter>
                         <Button colorScheme={'blue'} onClick={() => formik.handleSubmit()}>
-                            Create
+                            Save
                         </Button>
                     </ModalFooter>
                 </ModalContent>
@@ -183,6 +212,13 @@ export function AlbumDelete({
     }
                             }: { album?: any, reload?: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure()
+    const deleteAlbum = () => {
+        AlbumServices.remove(album.albumId).then(() => {
+            onClose();
+            reload();
+        })
+    }
+
     return (
         <>
             <IconButton aria-label='Add to friends' icon={<DeleteIcon/>} colorScheme={'red'}
@@ -198,10 +234,7 @@ export function AlbumDelete({
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme={'red'} onClick={() => {
-                            reload();
-                            onClose();
-                        }}>
+                        <Button colorScheme={'red'} onClick={() => deleteAlbum()}>
                             Delete
                         </Button>
                     </ModalFooter>

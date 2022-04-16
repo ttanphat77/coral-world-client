@@ -1,39 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {
-    Container,
-    Heading,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
-    HStack,
-    Link,
-    Image,
-    Badge,
-    IconButton,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    SimpleGrid,
-    Box,
-    Stack,
-    FormControl,
-    FormLabel, Textarea, Flex, Spacer, Button, useDisclosure, Select, Text,
+    Container, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, HStack, Image, IconButton, Modal,
+    ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, SimpleGrid,
+    Box, Stack, FormControl, FormLabel, Flex, Spacer, Button, useDisclosure, Select, Text,
 } from "@chakra-ui/react";
 import CoralSpeciesServices from "../../services/coralSpeciesServices";
-import Datatable, {OptionFilter} from "../../components/datatable";
-import {Link as RouterLink} from 'react-router-dom';
-import CoralGenusServices from "../../services/coralGenusServices";
-import {ExternalLinkIcon, ViewIcon} from '@chakra-ui/icons';
-import DraftTable from "./draftTable";
-import MediaContributeTable from "./mediaContributeTable";
+import Datatable from "../../components/datatable";
+import {ViewIcon} from '@chakra-ui/icons';
 import CroppedImageServices from "../../services/croppedImageServices";
 import {useFormik} from "formik";
-import SpeciesMediaServices from "../../services/speciesMediaService";
 import {useAuth} from "../../hooks/useAuth";
 import AccountServices from "../../services/accountServices";
 
@@ -61,7 +36,7 @@ export default function ImageLabeling() {
         });
     };
 
-    const loadData = () =>{
+    const loadData = () => {
         CoralSpeciesServices.getAll().then(res => {
             setSpecies(res.data);
         });
@@ -95,7 +70,7 @@ export default function ImageLabeling() {
     );
 }
 
-function LabelingTable ({images, species, reload} : {images: any[], species: any[], reload: () => void}) {
+function LabelingTable({images, species, reload}: { images: any[], species: any[], reload: () => void }) {
 
     const data = images.map((m: any) => {
         return {
@@ -106,29 +81,29 @@ function LabelingTable ({images, species, reload} : {images: any[], species: any
     })
 
     const columns = [
-            {
-                Header: 'Media',
-                accessor: 'url' as const,
-                Cell: (props: any) => (
-                    <Image
-                        src={props.value}
-                        width={'70%'}
-                        height={'75px'}
-                        objectFit="cover"/>
-                ),
-                disableSortBy: true,
-                disableFilters: true,
-            },
-            {
-                id: 'edit-button',
-                Cell: ({row}: { row: any }) =>
-                    <HStack spacing={2}>
-                        <ImageLabel image={row.original.image} species={species} reload={reload}/>
-                    </HStack>,
-            },
-        ] as any;
+        {
+            Header: 'Media',
+            accessor: 'url' as const,
+            Cell: (props: any) => (
+                <Image
+                    src={props.value}
+                    width={'70%'}
+                    height={'75px'}
+                    objectFit="cover"/>
+            ),
+            disableSortBy: true,
+            disableFilters: true,
+        },
+        {
+            id: 'edit-button',
+            Cell: ({row}: { row: any }) =>
+                <HStack spacing={2}>
+                    <ImageLabel image={row.original.image} species={species} reload={reload}/>
+                </HStack>,
+        },
+    ] as any;
 
-    return  <Datatable columns={columns} data={data}/>
+    return <Datatable columns={columns} data={data}/>
 }
 
 function ImageLabel({image, species, reload}: { image: any, species: any[], reload: () => void }) {
@@ -176,16 +151,19 @@ function ImageLabel({image, species, reload}: { image: any, species: any[], relo
                                     <Stack>
                                         <FormControl id="label">
                                             <FormLabel>Label</FormLabel>
-                                            <Select placeholder='Select label' value={formik.values.label} onBlur={formik.handleBlur}
+                                            <Select placeholder='Select label' value={formik.values.label}
+                                                    onBlur={formik.handleBlur}
                                                     onChange={formik.handleChange}>
                                                 {species.map((spe: any) => (
-                                                    <option key={spe.coralSpeciesId} value={spe.scientificName}>{spe.scientificName}</option>
+                                                    <option key={spe.coralSpeciesId}
+                                                            value={spe.scientificName}>{spe.scientificName}</option>
                                                 ))}
                                             </Select>
                                         </FormControl>
                                         <Flex>
                                             <Spacer/>
-                                            <Button colorScheme='blue' type={'submit'} disabled={formik.values.label == 'Undefined'}>
+                                            <Button colorScheme='blue' type={'submit'}
+                                                    disabled={formik.values.label == 'Undefined'}>
                                                 Submit
                                             </Button>
                                         </Flex>
@@ -200,7 +178,7 @@ function ImageLabel({image, species, reload}: { image: any, species: any[], relo
     )
 }
 
-function VerifyingTable ({images, users, reload}: { images: any, users: any[], reload: () => void }) {
+function VerifyingTable({images, users, reload}: { images: any, users: any[], reload: () => void }) {
 
     const data = images.map((m: any) => {
         m.user = users.find((u: any) => u.accountId == m.labeledBy);
@@ -244,7 +222,7 @@ function VerifyingTable ({images, users, reload}: { images: any, users: any[], r
         },
     ] as any;
 
-    return  <Datatable columns={columns} data={data}/>
+    return <Datatable columns={columns} data={data}/>
 }
 
 
@@ -297,7 +275,8 @@ function LabelVerify({image, reload}: { image: any, reload: () => void }) {
                                     </Text>
                                     <Flex>
                                         <Spacer/>
-                                        <Button colorScheme='blue' type={'submit'} mr={2} onClick={() => changeStatus(3)}>
+                                        <Button colorScheme='blue' type={'submit'} mr={2}
+                                                onClick={() => changeStatus(3)}>
                                             Verify
                                         </Button>
                                         <Button colorScheme='red' type={'submit'} onClick={() => changeStatus(1)}>
