@@ -23,6 +23,7 @@ import ImageLabeling from "./pages/contributeMangement/imageLabeling";
 import SpeciesDraftManagement from "./pages/admin/speciesDraftManagement";
 import SpeciesMediaManagement from "./pages/admin/speciesMediaManagement";
 import LabelImageManagement from "./pages/admin/labeledImageManagement";
+import ArticleEditor from "./pages/article/articleEditor";
 
 export const App = () => {
     const auth = useAuth();
@@ -32,28 +33,29 @@ export const App = () => {
                 <Routes>
                     <Route element={<Layout />}>
                         <Route path="/" element={<Home />} />
-                        <Route path="/taxonomy">
+                        <Route path="editor" element={<ArticleEditor />} />
+                        <Route path="taxonomy">
                             <Route index element={<Taxonomy />} />
                             <Route path=":id" element={<TaxonomyDetail />} />
                         </Route>
-                        <Route path="/about" element={<About />} />
-                        <Route path="/auth" element={<RequireUnauth/>}>
+                        <Route path="about" element={<About />} />
+                        <Route path="auth" element={<RequireUnauth/>}>
                             <Route path="signin" element={<Signin />} />
                             <Route path="signup" element={<Signup />} />
                         </Route>
-                        <Route path="/user" element={<RequireUserAuth />}>
+                        <Route path="user" element={<RequireUserAuth />}>
                             <Route path="gallery">
                                 <Route index element={<UserGallery />} />
                                 <Route path=":id" element={<Album />} />
                             </Route>
                             <Route path="contribute" element={<UserContribution />} />
                         </Route>
-                        <Route path="/researcher" element={<RequireResearcherAuth />}>
+                        <Route path="researcher" element={<RequireResearcherAuth />}>
                             <Route path="contribute" element={<UserContribution />} />
                             <Route path="todo" element={<Todofactsheet />} />
                             <Route path="image-label" element={<ImageLabeling />} />
                         </Route>
-                        <Route path="/admin" element={<RequireAdminAuth />}>
+                        <Route path="admin" element={<RequireAdminAuth />}>
                             <Route index element={<Welcome />} />
                             <Route path="species" element={<SpeciesManagement />} />
                             <Route path="genus" element={<GenusManagement />} />
