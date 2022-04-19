@@ -12,6 +12,17 @@ import TaxonomyDetail from "./pages/taxonomyDetail/taxonomyDetail";
 import './App.css';
 import {useAuth} from "./hooks/useAuth";
 import Album from "./pages/userGallery/album";
+import UserContribution from "./pages/contributeMangement/userContribution";
+import SimpleSidebar from "./components/sidebar";
+import Welcome from "./pages/admin/welcome";
+import SpeciesManagement from "./pages/admin/speciesManagement";
+import GenusManagement from "./pages/admin/genusManagement";
+import DivingSessionManagement from "./pages/admin/divingSessionManagement";
+import Todofactsheet from "./pages/contributeMangement/todofactsheet";
+import ImageLabeling from "./pages/contributeMangement/imageLabeling";
+import SpeciesDraftManagement from "./pages/admin/speciesDraftManagement";
+import SpeciesMediaManagement from "./pages/admin/speciesMediaManagement";
+import LabelImageManagement from "./pages/admin/labeledImageManagement";
 
 export const App = () => {
     const auth = useAuth();
@@ -35,6 +46,21 @@ export const App = () => {
                                 <Route index element={<UserGallery />} />
                                 <Route path=":id" element={<Album />} />
                             </Route>
+                            <Route path="contribute" element={<UserContribution />} />
+                        </Route>
+                        <Route path="/researcher" element={<RequireResearcherAuth />}>
+                            <Route path="contribute" element={<UserContribution />} />
+                            <Route path="todo" element={<Todofactsheet />} />
+                            <Route path="image-label" element={<ImageLabeling />} />
+                        </Route>
+                        <Route path="/admin" element={<RequireAdminAuth />}>
+                            <Route index element={<Welcome />} />
+                            <Route path="species" element={<SpeciesManagement />} />
+                            <Route path="genus" element={<GenusManagement />} />
+                            <Route path="divingSession" element={<DivingSessionManagement />} />
+                            <Route path="draft" element={<SpeciesDraftManagement />} />
+                            <Route path="species-media" element={<SpeciesMediaManagement />} />
+                            <Route path="label-image" element={<LabelImageManagement />} />
                         </Route>
                     </Route>
                 </Routes>
@@ -48,7 +74,7 @@ function Layout() {
         <div>
             <Header/>
             <hr/>
-            <div style={{margin: '75px 0 0 0'}}>
+            <div style={{margin: '59px 0 0 0'}}>
                 <Outlet/>
             </div>
         </div>
@@ -61,6 +87,27 @@ function RequireUserAuth(props: any) {
         return <Navigate to={'/auth/signin'}/>
     }
     return <Outlet />
+}
+
+function RequireResearcherAuth(props: any) {
+    const auth = useAuth();
+    if (!auth.isAuthenticated()) {
+        return <Navigate to={'/auth/signin'}/>
+    }
+    return <Outlet />
+}
+
+function RequireAdminAuth(props: any) {
+    const auth = useAuth();
+    if (!auth.isAuthenticated()) {
+        return <Navigate to={'/auth/signin'}/>
+    }
+    return (
+        <SimpleSidebar>
+            <div>
+                <Outlet/>
+            </div>
+        </SimpleSidebar>)
 }
 
 function RequireUnauth() {
