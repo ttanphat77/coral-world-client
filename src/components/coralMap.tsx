@@ -65,7 +65,7 @@ export default function CoralMap(){
         <GoogleMapReact
             options={MAP_OPTIONS}
             bootstrapURLKeys={{
-                key: process.env.REACT_APP_GG_MAP_API_KEY || '',
+                key: 'AIzaSyDrYv6k4vyvM4mScKoysweL6874oSf1MUk   ',
                 language: "en",
                 region: "VN"
             }}
