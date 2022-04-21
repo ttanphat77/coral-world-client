@@ -19,14 +19,13 @@ export default function ArticleEditor() {
         min_height: 500,
         menubar: false,
         plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'editimage', 'charmap',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'preview', 'help', 'wordcount', 'autoresize'
+            'advlist', 'autolink', 'lists', 'link', 'image', 'editimage', 'charmap', 'emoticons',
+            'searchreplace', 'code', 'media', 'help', 'wordcount', 'autoresize', 'codesample'
         ],
-        toolbar: 'undo redo | blocks | ' +
-            'bold italic forecolor  | link image | alignleft aligncenter ' +
+        toolbar: 'undo redo | blocks | bold italic forecolor | ' +
+            'link image media charmap emoticons codesample | alignleft aligncenter ' +
             'alignright alignjustify | bullist numlist outdent indent | ' +
-            'removeformat | preview code help',
+            'removeformat | code help',
         image_caption: true,
         toolbar_sticky: true,
         toolbar_sticky_offset: 60,
