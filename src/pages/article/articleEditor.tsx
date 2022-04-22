@@ -1,7 +1,8 @@
 import React, {useRef} from 'react';
 import {Editor} from "@tinymce/tinymce-react";
-import {Container, Input} from '@chakra-ui/react';
+import {Container, Heading, Input, Stack} from '@chakra-ui/react';
 import storage from "../../services/firebaseServices";
+import {Select} from "chakra-react-select";
 
 export default function ArticleEditor() {
     const editorRef = useRef<any>(null);
@@ -73,14 +74,37 @@ export default function ArticleEditor() {
     return (
         <>
             <Container maxW={'container.xl'} py={2}>
-                <Editor
-                    apiKey={'2yigo6um2aq207gcvw7a4geh74yql076jmg7y6r14ogk9dnb'}
-                    onInit={(evt, editor) => editorRef.current = editor}
-                    initialValue="<p>This is the initial content of the editor.</p>"
-                    init={editorInit}
-                />
-                <Input type="file" ref={inputFileRef} accept={'image/*'} display={'none'}/>
-                <button onClick={log}>Log editor content</button>
+                <Stack>
+                    <Heading as='h2' size='xl' contentEditable={true}>
+                        This is article title
+                    </Heading>
+                    <Select
+                        isMulti
+                        closeMenuOnSelect={false}
+                        selectedOptionStyle="check"
+                        hideSelectedOptions={false}
+                        menuPortalTarget={document.body}
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 2 }) }}
+                        options={[
+                            {
+                                label: "I am red",
+                                value: "i-am-red",
+                            },
+                            {
+                                label: "I fallback to purple",
+                                value: "i-am-purple",
+                            },
+                        ]}
+                    />
+                    <Editor
+                        apiKey={'2yigo6um2aq207gcvw7a4geh74yql076jmg7y6r14ogk9dnb'}
+                        onInit={(evt, editor) => editorRef.current = editor}
+                        initialValue="<p>This is the initial content of the editor.</p>"
+                        init={editorInit}
+                    />
+                    <Input type="file" ref={inputFileRef} accept={'image/*'} display={'none'}/>
+                    <button onClick={log}>Log editor content</button>
+                </Stack>
             </Container>
         </>
     );

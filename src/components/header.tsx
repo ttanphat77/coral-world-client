@@ -43,7 +43,7 @@ export default function Header() {
     return (
         <Box
             position={'fixed'}
-            zIndex={2}
+            zIndex={3}
             width={'100%'}>
             <Flex
                 bg={'#005A80'}
