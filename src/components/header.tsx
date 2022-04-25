@@ -376,11 +376,15 @@ const RES_NAV_ITEMS: Array<NavItem> = [
                 href: '/researcher/todo',
             },
             {
-                label: 'My Contribute',
+                label: 'Factsheet Contribute',
                 href: '/researcher/contribute',
             },
             {
                 label: 'Image labeling',
+                href: '/researcher/image-label',
+            },
+            {
+                label: 'My articles',
                 href: '/researcher/image-label',
             }
         ],

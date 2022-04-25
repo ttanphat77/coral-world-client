@@ -1,6 +1,20 @@
 import React, {useRef} from 'react';
 import {Editor} from "@tinymce/tinymce-react";
-import {Container, Heading, Input, Stack} from '@chakra-ui/react';
+import {
+    AspectRatio,
+    Button,
+    Container,
+    FormControl,
+    FormErrorMessage,
+    FormLabel,
+    Heading,
+    Input, SimpleGrid,
+    Stack,
+    Image,
+    Textarea,
+    Box,
+    Center, Text, Flex, Spacer, HStack
+} from '@chakra-ui/react';
 import storage from "../../services/firebaseServices";
 import {Select} from "chakra-react-select";
 
@@ -9,6 +23,7 @@ export default function ArticleEditor() {
 
 
     const inputFileRef = useRef<HTMLInputElement>(null);
+    const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
     const log = () => {
         if (editorRef.current) {
@@ -17,7 +32,7 @@ export default function ArticleEditor() {
     };
 
     const editorInit = {
-        min_height: 500,
+        min_height: 400,
         menubar: false,
         plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'editimage', 'charmap', 'emoticons',
@@ -74,28 +89,62 @@ export default function ArticleEditor() {
     return (
         <>
             <Container maxW={'container.xl'} py={2}>
-                <Stack>
-                    <Heading as='h2' size='xl' contentEditable={true}>
-                        This is article title
+                <Stack spacing={4}>
+                    <Heading as='h2' size='lg'>
+                        Article draft
                     </Heading>
-                    <Select
-                        isMulti
-                        closeMenuOnSelect={false}
-                        selectedOptionStyle="check"
-                        hideSelectedOptions={false}
-                        menuPortalTarget={document.body}
-                        styles={{ menuPortal: base => ({ ...base, zIndex: 2 }) }}
-                        options={[
-                            {
-                                label: "I am red",
-                                value: "i-am-red",
-                            },
-                            {
-                                label: "I fallback to purple",
-                                value: "i-am-purple",
-                            },
-                        ]}
-                    />
+                    <FormControl id="title">
+                        <FormLabel>Title</FormLabel>
+                        <Input size={'lg'}></Input>
+                    </FormControl>
+                    <SimpleGrid columns={[1, 1, 2]} spacing={8}>
+                        <Stack>
+                            <FormControl id="tags">
+                                <FormLabel>Tags</FormLabel>
+                                <Select
+                                    isMulti
+                                    closeMenuOnSelect={false}
+                                    selectedOptionStyle="check"
+                                    hideSelectedOptions={false}
+                                    menuPortalTarget={document.body}
+                                    styles={{menuPortal: base => ({...base, zIndex: 2})}}
+                                    options={[
+                                        {
+                                            label: "News",
+                                            value: "1",
+                                        },
+                                        {
+                                            label: "Coral",
+                                            value: "2",
+                                        },
+                                        {
+                                            label: "Environment",
+                                            value: "3",
+                                        },
+                                        {
+                                            label: "Science",
+                                            value: "4",
+                                        },
+                                        {
+                                            label: "Research",
+                                            value: "5",
+                                        },
+                                    ]}
+                                />
+                            </FormControl>
+                            <FormControl id="lead">
+                                <FormLabel>Lead</FormLabel>
+                                <Textarea placeholder={'Lead paragraph for article'} h={'138px'}></Textarea>
+                            </FormControl>
+                        </Stack>
+                        <Box height={'250px'} cursor={'pointer'} onClick={() => thumbnailInputRef?.current?.click()}>
+                            <Center bg='gray.200' h={'100%'} color='gray.700'>
+                                <Text fontSize='3xl'>Add thumbnail</Text>
+                            </Center>
+                            {/*<Image src='https://miro.medium.com/max/1400/1*JsW9FiNpc6pv0M3pTAe2eA.jpeg' alt='naruto' objectFit='cover' boxSize={'100%'}/>*/}
+                        </Box>
+                        <Input type={'file'} ref={thumbnailInputRef} accept={'image/*'} display={'none'}/>
+                    </SimpleGrid>
                     <Editor
                         apiKey={'2yigo6um2aq207gcvw7a4geh74yql076jmg7y6r14ogk9dnb'}
                         onInit={(evt, editor) => editorRef.current = editor}
@@ -103,7 +152,10 @@ export default function ArticleEditor() {
                         init={editorInit}
                     />
                     <Input type="file" ref={inputFileRef} accept={'image/*'} display={'none'}/>
-                    <button onClick={log}>Log editor content</button>
+                    <HStack spacing={4}>
+                        <Button colorScheme={'green'}>Submit</Button>
+                        <Button colorScheme={'gray'}>Save draft</Button>
+                    </HStack>
                 </Stack>
             </Container>
         </>

@@ -24,6 +24,8 @@ import SpeciesDraftManagement from "./pages/admin/speciesDraftManagement";
 import SpeciesMediaManagement from "./pages/admin/speciesMediaManagement";
 import LabelImageManagement from "./pages/admin/labeledImageManagement";
 import ArticleEditor from "./pages/article/articleEditor";
+import UserArticles from "./pages/contributeMangement/userArticles";
+import ArticleView from "./pages/article/articleView";
 
 export const App = () => {
     const auth = useAuth();
@@ -34,6 +36,8 @@ export const App = () => {
                     <Route element={<Layout />}>
                         <Route path="/" element={<Home />} />
                         <Route path="editor" element={<ArticleEditor />} />
+                        <Route path="article-view" element={<ArticleView />} />
+                        <Route path="user-articles" element={<UserArticles />} />
                         <Route path="taxonomy">
                             <Route index element={<Taxonomy />} />
                             <Route path=":id" element={<TaxonomyDetail />} />
@@ -63,6 +67,7 @@ export const App = () => {
                             <Route path="draft" element={<SpeciesDraftManagement />} />
                             <Route path="species-media" element={<SpeciesMediaManagement />} />
                             <Route path="label-image" element={<LabelImageManagement />} />
+                            <Route path="articles" element={<UserArticles />} />
                         </Route>
                     </Route>
                 </Routes>

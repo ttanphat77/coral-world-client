@@ -46,6 +46,8 @@ export default function Taxonomy() {
         setSearchValue(event.target.value);
     };
 
+    const data = genus?.filter((g: any) => g.species?.filter((s: any) => s.scientificName.toLowerCase().includes(searchValue.toLowerCase())).length > 0);
+
     return (
         <Container maxW={'container.xl'} py={8}>
             <Stack spacing={8}>
@@ -71,13 +73,12 @@ export default function Taxonomy() {
                         </Stack>
                     </FormControl>
                 </Box>
-                {searchValue === '' &&
                 <Box>
                     <SimpleGrid columns={[1, 1, 3]} spacing={8}>
                         <Accordion allowMultiple allowToggle>
                             {
-                                genus.map((g: any, index) => {
-                                    return ( index % 3 == 0 &&
+                                data.map((g: any, index) => {
+                                    return (index % 3 == 0 &&
                                         <AccordionItem>
                                             <AccordionButton>
                                                 <AccordionIcon/>
@@ -86,7 +87,7 @@ export default function Taxonomy() {
                                             <AccordionPanel>
                                                 <List>
                                                     {
-                                                        g.species?.map((s: any) => {
+                                                        g.species?.filter((s:any) => s.scientificName.toLowerCase().includes(searchValue.toLowerCase())).map((s: any) => {
                                                             return (
                                                                 <ListItem>
                                                                     <ListIcon as={GiLightningBranches}
@@ -106,8 +107,8 @@ export default function Taxonomy() {
                         </Accordion>
                         <Accordion allowMultiple allowToggle>
                             {
-                                genus.map((g: any, index) => {
-                                    return ( index % 3 == 1 &&
+                                data.map((g: any, index) => {
+                                    return (index % 3 == 1 &&
                                         <AccordionItem>
                                             <AccordionButton>
                                                 <AccordionIcon/>
@@ -116,7 +117,7 @@ export default function Taxonomy() {
                                             <AccordionPanel>
                                                 <List>
                                                     {
-                                                        g.species?.map((s: any) => {
+                                                        g.species?.filter((s:any) => s.scientificName.toLowerCase().includes(searchValue.toLowerCase())).map((s: any) => {
                                                             return (
                                                                 <ListItem>
                                                                     <ListIcon as={GiLightningBranches}
@@ -136,8 +137,8 @@ export default function Taxonomy() {
                         </Accordion>
                         <Accordion allowMultiple allowToggle>
                             {
-                                genus.map((g: any, index) => {
-                                    return ( index % 3 == 2 &&
+                                data.map((g: any, index) => {
+                                    return (index % 3 == 2 &&
                                         <AccordionItem>
                                             <AccordionButton>
                                                 <AccordionIcon/>
@@ -146,7 +147,7 @@ export default function Taxonomy() {
                                             <AccordionPanel>
                                                 <List>
                                                     {
-                                                        g.species?.map((s: any) => {
+                                                        g.species?.filter((s:any) => s.scientificName.toLowerCase().includes(searchValue.toLowerCase())).map((s: any) => {
                                                             return (
                                                                 <ListItem>
                                                                     <ListIcon as={GiLightningBranches}
@@ -166,12 +167,6 @@ export default function Taxonomy() {
                         </Accordion>
                     </SimpleGrid>
                 </Box>
-                }
-
-                {searchValue !== '' &&
-                <Box>
-                </Box>
-                }
             </Stack>
         </Container>
     );
