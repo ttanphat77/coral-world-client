@@ -19,6 +19,10 @@ const CoralSpeciesServices = {
         return http.get(apiUrl + 'GetAllCoralsByGenus?id=' + genusId);
     },
 
+    getByArea: (areaId: any) => {
+        return http.get(apiUrl + 'GetAllCoralsByArea?areaId=' + areaId);
+    },
+
     create: (data: any) => {
         return http.post(apiUrl, data);
     },

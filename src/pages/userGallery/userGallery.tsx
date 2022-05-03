@@ -155,7 +155,7 @@ export function AlbumForm({
                     <ModalHeader>{album ? 'Edit album info' : 'New album'}</ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
-                        <form>
+                        <form onSubmit={formik.handleSubmit}>
                             <Stack spacing={4}>
                                 <FormControl id="albumName" isRequired
                                              isInvalid={Boolean(formik.touched?.albumName && formik.errors?.albumName)}>

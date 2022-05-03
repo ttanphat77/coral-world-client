@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-    Box,
+    Box, Button,
     chakra,
     Flex,
     IconButton,
     Input, NumberDecrementStepper, NumberIncrementStepper,
-    NumberInput, NumberInputField, NumberInputStepper, Select,
+    NumberInput, NumberInputField, NumberInputStepper, Select, Slider, SliderFilledTrack, SliderThumb, SliderTrack,
     Table,
     Tbody,
     Td,
@@ -239,3 +239,49 @@ export function OptionFilter({column: {filterValue, setFilter, preFilteredRows, 
         </Select>
     )
 }
+
+export function SliderColumnFilter({
+                                column: { filterValue, setFilter, preFilteredRows, id },
+                            }: any) {
+    // Calculate the min and max
+    // using the preFilteredRows
+
+    const [min, max] = React.useMemo(() => {
+        let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+        let max = preFilteredRows.length ? preFilteredRows[0].values[id] : 0
+        preFilteredRows.forEach((row: any) => {
+            min = Math.min(row.values[id], min)
+            max = Math.max(row.values[id], max)
+        })
+        return [min, max]
+    }, [id, preFilteredRows])
+
+    return (
+        <>
+            <input
+                type="range"
+                min={min}
+                max={max}
+                value={filterValue || min}
+                onChange={e => {
+                    setFilter(parseInt(e.target.value, 10))
+                }}
+            />
+            <Button onClick={() => setFilter(undefined)} size={'sm'}>Off</Button>
+        </>
+    )
+}
+
+// Define a custom filter filter function!
+export function filterGreaterThan(rows: any, id: any, filterValue: any) {
+    return rows.filter((row: any) => {
+        const rowValue = row.values[id]
+        return rowValue >= filterValue
+    })
+}
+
+// This is an autoRemove method on the filter function that
+// when given the new filter value and returns true, the filter
+// will be automatically removed. Normally this is just an undefined
+// check, but here, we want to remove the filter if it's not a number
+filterGreaterThan.autoRemove = (val: any) => typeof val !== 'number'

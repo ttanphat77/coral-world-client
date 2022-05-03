@@ -110,7 +110,7 @@ export default function Header() {
                                     <MenuItem
                                         _focus={{bg: '#337B99'}} as={RouterLink} to={'/user/gallery'}>My Gallery</MenuItem>
                                     <MenuItem
-                                        _focus={{bg: '#337B99'}}>Account Settings</MenuItem>
+                                        _focus={{bg: '#337B99'}} as={RouterLink} to={'/user/profile'}>Account Settings</MenuItem>
                                     <MenuItem
                                         _focus={{bg: '#337B99'}} onClick={() => auth.signout()}>Logout</MenuItem>
                                 </MenuList>
@@ -320,7 +320,7 @@ const USER_NAV_ITEMS: Array<NavItem> = [
     },
     {
         label: 'Gallery',
-        href: '/articles',
+        href: '/gallery',
     },
     {
         label: 'Articles',
@@ -339,7 +339,7 @@ const ADMIN_NAV_ITEMS: Array<NavItem> = [
     },
     {
         label: 'Gallery',
-        href: '/articles',
+        href: '/gallery',
     },
     {
         label: 'Articles',
@@ -362,7 +362,7 @@ const RES_NAV_ITEMS: Array<NavItem> = [
     },
     {
         label: 'Gallery',
-        href: '/articles',
+        href: '/gallery',
     },
     {
         label: 'Articles',
@@ -385,7 +385,7 @@ const RES_NAV_ITEMS: Array<NavItem> = [
             },
             {
                 label: 'My articles',
-                href: '/researcher/image-label',
+                href: '/researcher/articles',
             }
         ],
     },

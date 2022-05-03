@@ -1,0 +1,15 @@
+.title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+}
+
+.lead {
+     display: -webkit-box;
+     -webkit-line-clamp: 3;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     -webkit-box-orient: vertical;
+ }

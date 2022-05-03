@@ -26,6 +26,11 @@ import LabelImageManagement from "./pages/admin/labeledImageManagement";
 import ArticleEditor from "./pages/article/articleEditor";
 import UserArticles from "./pages/contributeMangement/userArticles";
 import ArticleView from "./pages/article/articleView";
+import Articles from "./pages/articles";
+import ArticleManagement from "./pages/admin/articleManagement";
+import Gallery from "./pages/gallery";
+import Profile from "./pages/profile";
+import AccountManagement from "./pages/admin/accountManagement";
 
 export const App = () => {
     const auth = useAuth();
@@ -36,13 +41,15 @@ export const App = () => {
                     <Route element={<Layout />}>
                         <Route path="/" element={<Home />} />
                         <Route path="editor" element={<ArticleEditor />} />
-                        <Route path="article-view" element={<ArticleView />} />
-                        <Route path="user-articles" element={<UserArticles />} />
+                        <Route path="articles">
+                            <Route index element={<Articles />} />
+                            <Route path=":id" element={<ArticleView />} />
+                        </Route>
                         <Route path="taxonomy">
                             <Route index element={<Taxonomy />} />
                             <Route path=":id" element={<TaxonomyDetail />} />
                         </Route>
-                        <Route path="about" element={<About />} />
+                        <Route path="gallery" element={<Gallery />} />
                         <Route path="auth" element={<RequireUnauth/>}>
                             <Route path="signin" element={<Signin />} />
                             <Route path="signup" element={<Signup />} />
@@ -52,12 +59,17 @@ export const App = () => {
                                 <Route index element={<UserGallery />} />
                                 <Route path=":id" element={<Album />} />
                             </Route>
+                            <Route path="profile" element={<Profile />} />
                             <Route path="contribute" element={<UserContribution />} />
                         </Route>
                         <Route path="researcher" element={<RequireResearcherAuth />}>
                             <Route path="contribute" element={<UserContribution />} />
                             <Route path="todo" element={<Todofactsheet />} />
                             <Route path="image-label" element={<ImageLabeling />} />
+                            <Route path="articles">
+                                <Route index element={<UserArticles />} />
+                                <Route path=":id" element={<ArticleEditor />} />
+                            </Route>
                         </Route>
                         <Route path="admin" element={<RequireAdminAuth />}>
                             <Route index element={<Welcome />} />
@@ -67,7 +79,8 @@ export const App = () => {
                             <Route path="draft" element={<SpeciesDraftManagement />} />
                             <Route path="species-media" element={<SpeciesMediaManagement />} />
                             <Route path="label-image" element={<LabelImageManagement />} />
-                            <Route path="articles" element={<UserArticles />} />
+                            <Route path="articles" element={<ArticleManagement />} />
+                            <Route path="account" element={<AccountManagement />} />
                         </Route>
                     </Route>
                 </Routes>

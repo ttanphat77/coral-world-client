@@ -74,9 +74,9 @@ export default function TaxonomyDetail() {
                                 <ListIcon as={GrInherit}/>
                                 <span>
                                     <strong>Parent: </strong>
-                                    <Link as={RouterLink} color={'blue.500'} to={'/genus/' + genus?.coralGenusId}>
-                                        {genus?.scientificName} <Text fontSize={'sm'}
-                                                                      as={'span'}>({genus?.authorCitation})</Text></Link>
+                                    {genus?.scientificName}
+                                    {genus?.authorCitation && <Text fontSize={'sm'}
+                                                                    as={'span'}>({genus?.authorCitation})</Text>}
                                 </span>
                             </ListItem> : ''}
                         {coral?.characters ?
@@ -131,14 +131,18 @@ export default function TaxonomyDetail() {
                     </List>
                 </Box>
                 <Box>
-                    <MediaCarousel media={medias}/>
+                    {medias.length > 0 ?
+                    <MediaCarousel media={medias}/> :
+                    <Center bg={'gray.200'} h={300}>
+                        No photos
+                    </Center>}
                 </Box>
             </SimpleGrid>
         </Container>
     );
 }
 
-function MediaCarousel({media} : {media: any[]}) {
+function MediaCarousel({media}: { media: any[] }) {
     const images = media.map((m: any) => {
         return {
             original: m.mediaURL,
@@ -267,6 +271,7 @@ function UpdateButton({coral, user}: { coral: any, user: any }) {
 function ContributeImage({coral, user}: { coral: any, user: any }) {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const [images, setImages] = useState<any[]>([]);
+    const [isloading, setIsLoading] = useState(false);
 
     const inputFileRef = React.useRef<HTMLInputElement>(null);
 
@@ -300,6 +305,8 @@ function ContributeImage({coral, user}: { coral: any, user: any }) {
     };
 
     const handleSubmit = () => {
+        setIsLoading(true);
+        let i = 0
         images.forEach(image => {
             const file = image.file;
             const name = file.name + '_' + new Date().getTime();
@@ -331,6 +338,11 @@ function ContributeImage({coral, user}: { coral: any, user: any }) {
                             createdBy: user?.account.accountId,
                             mediaURL: url,
                         }).then((res: any) => {
+                            i++;
+                            if (i === images.length) {
+                                setIsLoading(false);
+                                onClose();
+                            }
                         });
                     });
                 });
@@ -374,7 +386,7 @@ function ContributeImage({coral, user}: { coral: any, user: any }) {
                         </Stack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button colorScheme='blue' disabled={images.length == 0} onClick={handleSubmit}>
+                        <Button colorScheme='blue' disabled={images.length == 0} onClick={handleSubmit} isLoading={isloading}>
                             Submit
                         </Button>
                     </ModalFooter>

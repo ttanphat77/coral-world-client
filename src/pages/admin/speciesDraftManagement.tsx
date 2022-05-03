@@ -281,7 +281,7 @@ function ApproveDraft({draft, reload}: { draft: any, reload: () => void }) {
                                 disabled={draft.status != 1}>
                             Accept
                         </Button>
-                        <Button colorScheme={'red'} onClick={() => approveDraft(2)}
+                        <Button colorScheme={'red'} onClick={() => approveDraft(3)}
                                 disabled={draft.status != 1} >
                             Reject
                         </Button>

@@ -11,12 +11,13 @@ import CroppedImageServices from "../../services/croppedImageServices";
 import {useFormik} from "formik";
 import {useAuth} from "../../hooks/useAuth";
 import AccountServices from "../../services/accountServices";
+import LabelImageServices from "../../services/labelImageService";
 
 export default function ImageLabeling() {
     const [labelImages, setLabelImages] = useState<any[]>([]);
     const [species, setSpecies] = useState<any[]>([]);
-    const [verifyImages, setVerifyImages] = useState<any[]>([]);
     const [users, setUsers] = useState<any[]>([]);
+    const [labels, setLabels] = useState<any[]>([]);
 
     const user = useAuth().user;
 
@@ -28,11 +29,10 @@ export default function ImageLabeling() {
 
     const loadImages = () => {
         CroppedImageServices.getAll().then(res => {
-            const images = res.data.reverse();
-            setLabelImages([]);
-            setLabelImages(images.filter((image: any) => image.status == 1));
-            setVerifyImages([]);
-            setVerifyImages(images.filter((image: any) => image.status == 2 && image.labeledBy != user.account?.accountId));
+            setLabelImages(res.data);
+        });
+        LabelImageServices.getAll().then(res => {
+            setLabels(res.data);
         });
     };
 
@@ -45,37 +45,14 @@ export default function ImageLabeling() {
         });
     };
 
+    const data = labelImages.map((m: any) => {
+        m.myLabel = labels.find((l: any) => l.imageId == m.imageId && l.accountId == user.account.accountId);
 
-    return (
-        <Container maxW={"container.xl"} p={2}>
-            <Heading as='h2' size='xl'>
-                Label coral images
-            </Heading>
-            <Tabs>
-                <TabList>
-                    <Tab>Suggest label</Tab>
-                    <Tab>Verify label</Tab>
-                </TabList>
-
-                <TabPanels>
-                    <TabPanel>
-                        <LabelingTable images={labelImages} species={species} reload={loadImages}/>
-                    </TabPanel>
-                    <TabPanel>
-                        <VerifyingTable images={verifyImages} users={users} reload={loadImages}/>
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-        </Container>
-    );
-}
-
-function LabelingTable({images, species, reload}: { images: any[], species: any[], reload: () => void }) {
-
-    const data = images.map((m: any) => {
         return {
             url: m.imageURL,
-            // date: m.createdTime,
+            aiLabel: m.aiLabel,
+            myLabel: m.myLabel ? m.myLabel.label : '',
+            date: m.createdTime,
             image: m
         }
     })
@@ -95,32 +72,77 @@ function LabelingTable({images, species, reload}: { images: any[], species: any[
             disableFilters: true,
         },
         {
+            Header: 'Labeled by AI',
+            accessor: 'aiLabel' as const,
+        },
+        {
+            Header: 'My label',
+            accessor: 'myLabel' as const,
+        },
+        {
+            Header: 'Created date',
+            accessor: 'date' as const,
+            disableFilters: true,
+            Cell: (props: any) => <>{(new Date(props.value)).toLocaleString()}</>
+        },
+        {
             id: 'edit-button',
             Cell: ({row}: { row: any }) =>
                 <HStack spacing={2}>
-                    <ImageLabel image={row.original.image} species={species} reload={reload}/>
+                    <ImageLabel image={row.original.image} species={species} labels={labels} reload={loadImages}/>
                 </HStack>,
         },
     ] as any;
 
-    return <Datatable columns={columns} data={data}/>
+    const sortBy = React.useMemo(
+        () => [
+            {
+                id: 'date',
+                desc: true,
+            },
+        ],
+        [],
+    ) as any
+
+    return (
+        <Container maxW={"container.xl"} p={2}>
+            <Heading as='h2' size='xl'>
+                Label coral images
+            </Heading>
+
+            <Datatable columns={columns} data={data} sortBy={sortBy}/>
+        </Container>
+    );
 }
 
-function ImageLabel({image, species, reload}: { image: any, species: any[], reload: () => void }) {
+function ImageLabel({image, species, labels, reload}: { image: any, species: any[], labels: any[], reload: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const user = useAuth().user;
     const formik = useFormik({
         initialValues: {
-            label: image.label,
+            label: image.myLabel ? image.myLabel.label : '',
         },
         onSubmit: (values) => {
-            image.label = values.label;
-            image.status = 2;
-            image.labeledBy = user?.account?.accountId;
-            CroppedImageServices.update(image).then(() => {
-                reload();
-                onClose();
-            })
+            if (image.myLabel) {
+                LabelImageServices.update({
+                    label: values.label,
+                    accountId: user?.account?.accountId,
+                    imageId: image.imageId,
+                    imageAccountId: image.myLabel.imageAccountId,
+                }).then(() => {
+                    reload();
+                    onClose();
+                });
+            } else {
+                LabelImageServices.create({
+                    label: values.label,
+                    accountId: user?.account?.accountId,
+                    imageId: image.imageId,
+                }).then(() => {
+                    reload();
+                    onClose();
+                });
+            }
         },
     })
 
@@ -164,126 +186,11 @@ function ImageLabel({image, species, reload}: { image: any, species: any[], relo
                                             <Spacer/>
                                             <Button colorScheme='blue' type={'submit'}
                                                     disabled={formik.values.label == 'Undefined'}>
-                                                Submit
+                                                Save
                                             </Button>
                                         </Flex>
                                     </Stack>
                                 </form>
-                            </Box>
-                        </SimpleGrid>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </>
-    )
-}
-
-function VerifyingTable({images, users, reload}: { images: any, users: any[], reload: () => void }) {
-
-    const data = images.map((m: any) => {
-        m.user = users.find((u: any) => u.accountId == m.labeledBy);
-        return {
-            url: m.imageURL,
-            label: m.label,
-            labelBy: m.user ? m.user?.firstName + ' ' + m.user?.lastName : '',
-            // date: m.createdTime,
-            image: m
-        }
-    })
-
-    const columns = [
-        {
-            Header: 'Media',
-            accessor: 'url' as const,
-            Cell: (props: any) => (
-                <Image
-                    src={props.value}
-                    width={'70%'}
-                    height={'75px'}
-                    objectFit="cover"/>
-            ),
-            disableSortBy: true,
-            disableFilters: true,
-        },
-        {
-            Header: 'Label',
-            accessor: 'label' as const,
-        },
-        {
-            Header: 'Label by',
-            accessor: 'labelBy' as const,
-        },
-        {
-            id: 'edit-button',
-            Cell: ({row}: { row: any }) =>
-                <HStack spacing={2}>
-                    <LabelVerify image={row.original.image} reload={reload}/>
-                </HStack>,
-        },
-    ] as any;
-
-    return <Datatable columns={columns} data={data}/>
-}
-
-
-function LabelVerify({image, reload}: { image: any, reload: () => void }) {
-    const {isOpen, onOpen, onClose} = useDisclosure();
-    const user = useAuth().user;
-
-    const changeStatus = (status: number) => {
-        image.status = status;
-        image.verifiedBy = user?.account?.accountId;
-        image.label = status == 1 ? 'Undefined' : image.label;
-        CroppedImageServices.update(image).then(() => {
-            reload();
-        })
-    }
-
-    return (
-        <>
-            <IconButton aria-label={'edit'} variant={'solid'} icon={<ViewIcon/>}
-                        onClick={onOpen}></IconButton>
-
-            <Modal isOpen={isOpen} onClose={onClose}
-                   closeOnOverlayClick={false} size={'6xl'}
-                   scrollBehavior={'inside'}>
-                <ModalOverlay/>
-                <ModalContent>
-                    <ModalHeader>{image?.species?.scientificName}</ModalHeader>
-                    <ModalCloseButton/>
-                    <ModalBody>
-                        <SimpleGrid columns={[1, 1, 2]} spacing={8}>
-                            <Box height={['50vh', '50vh', '70vh']} bg={'black'}
-                                 onClick={onOpen} alignContent={'center'}>
-                                <Image
-                                    height={'100%'}
-                                    width={'100%'}
-                                    objectFit={'contain'}
-                                    src={image.imageURL}/>
-                            </Box>
-                            <Box>
-                                <Stack>
-                                    <Text>
-                                        <strong>Label: </strong>
-                                        <em>
-                                            {image?.label}</em>
-                                    </Text>
-                                    <Text>
-                                        <strong>By: </strong>
-                                        <em>
-                                            {image.user?.firstName + ' ' + image.user?.lastName}</em>
-                                    </Text>
-                                    <Flex>
-                                        <Spacer/>
-                                        <Button colorScheme='blue' type={'submit'} mr={2}
-                                                onClick={() => changeStatus(3)}>
-                                            Verify
-                                        </Button>
-                                        <Button colorScheme='red' type={'submit'} onClick={() => changeStatus(1)}>
-                                            Reject
-                                        </Button>
-                                    </Flex>
-                                </Stack>
                             </Box>
                         </SimpleGrid>
                     </ModalBody>

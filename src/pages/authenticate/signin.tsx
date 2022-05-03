@@ -10,13 +10,15 @@ import {
     Button,
     Heading,
     Text,
-    useColorModeValue,
+    useColorModeValue, FormErrorMessage,
 } from '@chakra-ui/react';
 import {useAuth} from "../../hooks/useAuth";
 import React from "react";
 import {useFormik} from "formik";
 
 export default function Signin() {
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [error, setError] = React.useState('');
     const auth = useAuth();
     const formik = useFormik({
         initialValues: {
@@ -24,7 +26,11 @@ export default function Signin() {
             password: '',
         },
         onSubmit: values => {
-            auth.signin(values.email, values.password);
+            setIsSubmitting(true);
+            auth.signin(values.email, values.password, (err:any) => {
+                setIsSubmitting(false);
+                setError(err ? 'Email or password is not correct!' : '');
+            });
         },
     });
 
@@ -47,9 +53,10 @@ export default function Signin() {
                                 <FormLabel>Email address</FormLabel>
                                 <Input type="email" value={formik.values.email} onChange={formik.handleChange}/>
                             </FormControl>
-                            <FormControl id="password">
+                            <FormControl id="password" isInvalid={Boolean(error)}>
                                 <FormLabel>Password</FormLabel>
                                 <Input type="password" value={formik.values.password} onChange={formik.handleChange}/>
+                                <FormErrorMessage>{error}</FormErrorMessage>
                             </FormControl>
                             <Stack spacing={10}>
                                 {/*<Stack*/}
@@ -60,6 +67,7 @@ export default function Signin() {
                                 {/*    <Link color={'blue.400'}>Forgot password?</Link>*/}
                                 {/*</Stack>*/}
                                 <Button
+                                    isLoading={isSubmitting}
                                     bg={'blue.400'}
                                     color={'white'}
                                     type={'submit'}

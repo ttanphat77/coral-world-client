@@ -17,6 +17,12 @@ const AreaServices = {
     },
     remove: (id: any) => {
         return http.delete(apiUrl + '?id=' + id)
+    },
+    getBySpecies: (id: any) => {
+        return http.get(apiUrl + 'GetAreasByCoralId?coralId=' + id)
+    },
+    addAreaToSpecies: (id: any, data: any) => {
+        return http.post(process.env.REACT_APP_API_URL + '/CoralArea/AddCoralAreasForCoral?coralId=' + id, data)
     }
 }
 

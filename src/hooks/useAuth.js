@@ -17,13 +17,17 @@ export const useAuth = () => {
 function useProvideAuth() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    const signin = (email, password) => {
+    const signin = (email, password, callback) => {
         http.post(apiUrl + '/Login', {email, password})
             .then(res => {
                 setUser(res.data);
                 localStorage.setItem('user', JSON.stringify(res.data));
-                navigate('/', {replace: true})
+                navigate('/', {replace: true});
+                callback(false);
                 return user
+            })
+            .catch(err => {
+                callback(true);
             })
     }
 

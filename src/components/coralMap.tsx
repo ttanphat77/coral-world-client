@@ -1,98 +1,101 @@
 import GoogleMapReact from "google-map-react";
 import * as React from "react";
-import {Circle, Icon} from "@chakra-ui/react";
-import { FaMapMarker } from "react-icons/fa";
+import {
+    Circle, Flex, Icon, Link, Popover, PopoverArrow,
+    PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Spacer
+} from "@chakra-ui/react";
+import {FaMapMarker} from "react-icons/fa";
+import {useEffect} from "react";
+import AreaServices from "../services/areaServices";
+import CoralSpeciesServices from "../services/coralSpeciesServices";
+import { Link as RouterLink} from "react-router-dom";
 
-export default function CoralMap(){
+export default function CoralMap() {
     const MAP_OPTIONS = {
         scrollwheel: true,
     };
+    const [areas, setAreas] = React.useState<any[]>([]);
 
-    const areas = [
-        {
-            "English": "Gulf of Tonkin",
-            "Name": "Vịnh Bắc Bộ",
-            "Lat": 20.73,
-            "Long": 107.22,
-            "Species": "177"
-        },
-        {
-            "English": "Central Vietnam",
-            "Name": "Trung Bộ",
-            "Lat": 15.95,
-            "Long": 108.52,
-            "Species": "204"
-        },
-        {
-            "English": "Gulf of Siam",
-            "Name": "Vịnh Thái Lan",
-            "Lat": 9.95,
-            "Long": 104.32,
-            "Species": "240"
-        },
-        {
-            "English": "Nhatrang Bay",
-            "Name": "Vịnh Nha Trang",
-            "Lat": 12.26,
-            "Long": 109.31,
-            "Species": "?"
-        },
-        {
-            "English": "Island Thu",
-            "Name": "Cù lao Thu/ Đảo Phú Quý",
-            "Lat": 10.53,
-            "Long": 108.94,
-            "Species": "211"
-        },
-        {
-            "English": "Kondao Islands",
-            "Name": "Côn Đảo",
-            "Lat": 8.7,
-            "Long": 106.61,
-            "Species": "211"
-        },
-        {
-            "English": "Spratly archipelago",
-            "Name": "Quần đảo Trường Sa",
-            "Lat": 8.644,
-            "Long": 111.92,
-            "Species": "251"
-        }
-    ]
+    useEffect(() => {
+        AreaServices.getAll().then(response => {
+            let i = 0;
+            response.data.forEach((area: any) => {
+                CoralSpeciesServices.getByArea(area.areaId).then(species => {
+                    i++;
+                    area.coralSpecies = species.data;
+                    if (i == response.data.length) {
+                        setAreas(response.data);
+                    }
+                });
+            })
+        });
+    }, []);
 
     // @ts-ignore
     return (
-        <GoogleMapReact
-            options={MAP_OPTIONS}
-            bootstrapURLKeys={{
-                key: 'AIzaSyDrYv6k4vyvM4mScKoysweL6874oSf1MUk   ',
-                language: "en",
-                region: "VN"
-            }}
-            defaultCenter={{ lat: 16.32, lng: 111.72 }}
-            defaultZoom={5}
-        >
-            {
-                areas.map((area) => (
+        <>
+            <GoogleMapReact
+                options={MAP_OPTIONS}
+                bootstrapURLKeys={{
+                    key: 'AIzaSyDrYv6k4vyvM4mScKoysweL6874oSf1MUk   ',
+                    language: "en",
+                    region: "VN"
+                }}
+                defaultCenter={{lat: 16.32, lng: 111.72}}
+                defaultZoom={5}
+            >
+                {
+                    areas.map((area) => (
                         <MapMarker
-                            key={area.Name}
-                            lat={area.Lat}
-                            lng={area.Long}
-                            text={area.English}
-                            species={area.Species}
+                            key={area.areaName}
+                            lat={area.mapPolygon.split(', ')[0]}
+                            lng={area.mapPolygon.split(', ')[1]}
+                            area={area}
                         />
                     ))
-            }
-        </GoogleMapReact>
+                }
+            </GoogleMapReact>
+        </>
     );
 };
 
 const MapMarker = (props: any) => {
+    const [showPopover, setShowPopover] = React.useState(false);
+
     return (
         <div>
-            <Icon as={FaMapMarker} h={'40px'} w={'40px'} color='#005A80' cursor={'pointer'}
-                  transform={'translate(-20px, -40px)'}
-            />
+            <Popover trigger={'hover'}>
+                <PopoverTrigger>
+                    <Icon as={FaMapMarker} h={'40px'} w={'40px'} color='#005A80' cursor={'pointer'}
+                          transform={'translate(-20px, -40px)'}
+                    />
+                </PopoverTrigger>
+                <PopoverContent>
+                    <PopoverArrow/>
+                    <PopoverHeader>{props.area.areaName}</PopoverHeader>
+                    <PopoverBody>{props.area.description}
+                        <Flex>
+                            <Spacer/>
+                            <Popover>
+                                <PopoverTrigger>
+                                    <Link color={'blue'}>{props.area?.coralSpecies?.length} species founded.</Link>
+                                </PopoverTrigger>
+                                {
+                                    props.area?.coralSpecies?.length > 0 &&
+                                    <PopoverContent maxW={150} maxH={300}>
+                                        <PopoverArrow />
+                                        <PopoverBody>
+                                            {props.area?.coralSpecies.map((species: any) =>
+                                                <Link as={RouterLink} to={'/taxonomy/' + species.coralSpeciesId}>{species.scientificName}</Link>)
+                                            }
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                }
+                            </Popover>
+                        </Flex>
+                    </PopoverBody>
+                </PopoverContent>
+            </Popover>
         </div>
     );
 };

@@ -7,9 +7,10 @@ import {
     IconButton, Input, Link,
     Modal, ModalBody, ModalCloseButton,
     ModalContent, ModalFooter, ModalHeader,
-    ModalOverlay, Select, Stack, Text, Textarea,
+    ModalOverlay, Stack, Text, Textarea, Select,
     useDisclosure,
 } from "@chakra-ui/react";
+import {Select as MultiSelect} from "chakra-react-select";
 import Datatable, {OptionFilter} from "../../components/datatable";
 import {AddIcon, DeleteIcon, EditIcon, ExternalLinkIcon} from "@chakra-ui/icons";
 import {useFormik} from "formik";
@@ -17,24 +18,33 @@ import * as Yup from "yup";
 import CoralSpeciesServices from "../../services/coralSpeciesServices";
 import CoralGenusServices from "../../services/coralGenusServices";
 import {Link as RouterLink} from "react-router-dom";
+import AreaServices from "../../services/areaServices";
 
 export default function SpeciesManagement() {
     const [speciesList, setSpeciesList] = useState<any[]>([]);
     const [genusList, setGenusList] = useState<any[]>([]);
+    const [areas, setAreas] = useState<any[]>([]);
 
 
     useEffect(() => {
-        load()
+        load();
+        loadData();
     }, []);
 
     const load = () => {
         CoralSpeciesServices.getAll().then((res: any) => {
             setSpeciesList(res.data);
         });
+    };
+
+    const loadData = () => {
         CoralGenusServices.getAll().then((res: any) => {
             setGenusList(res.data);
         });
-    };
+        AreaServices.getAll().then((res: any) => {
+            setAreas(res.data);
+        });
+    }
 
     const data = speciesList.map((s: any) => {
         return {
@@ -49,10 +59,10 @@ export default function SpeciesManagement() {
     const columns = [
         {
             Header: 'Name',
-            accessor: 'coral',
-            Cell: (props: any) =>
-                <Link as={RouterLink} to={'/taxonomy/' + props.value.coralSpeciesId} target={'_blank'}>
-                    {props.value.scientificName} ({props.value.authorCitation}) <ExternalLinkIcon mx='2px'/>
+            accessor: 'name',
+            Cell: ({row}: { row: any }) =>
+                <Link as={RouterLink} to={'/taxonomy/' + row.original.coral.coralSpeciesId} target={'_blank'}>
+                    {row.original.name}<ExternalLinkIcon mx='2px'/>
                 </Link>
         },
         {
@@ -76,7 +86,7 @@ export default function SpeciesManagement() {
             id: 'edit-button',
             Cell: ({row}: { row: any }) =>
                 <HStack spacing={2}>
-                    <CoralForm coral={row.original.coral} genus={genusList} reload={load}/>
+                    <CoralForm coral={row.original.coral} genus={genusList} reload={load} areas={areas}/>
                     <DeleteCoral coral={row.original.coral} reload={load}/>
                 </HStack>,
         },
@@ -95,7 +105,7 @@ export default function SpeciesManagement() {
     return (
         <Container maxW={"container.xl"} p={2}>
             <Heading as='h2' size='xl'>
-                Species <CoralForm genus={genusList} reload={load}/>
+                Species <CoralForm genus={genusList} reload={load} areas={areas}/>
             </Heading>
             <Datatable data={data} columns={columns} sortBy={sortBy}/>
         </Container>
@@ -111,8 +121,9 @@ const validationSchema = Yup.object({
         .required('Author citation is required'),
 });
 
-function CoralForm({coral, genus, reload}: { coral?: any, genus: any[], reload: () => void }) {
+function CoralForm({coral, genus, areas, reload}: { coral?: any, genus: any[], areas: any[], reload: () => void }) {
     const {isOpen, onOpen, onClose} = useDisclosure();
+    const [coralAreas, setCoralAreas] = useState<any[]>([]);
     const formik = useFormik({
         initialValues: {
             coralSpeciesId: coral ? coral.coralSpeciesId : 0,
@@ -131,22 +142,37 @@ function CoralForm({coral, genus, reload}: { coral?: any, genus: any[], reload: 
             if (formik.isValid) {
                 if (values.coralSpeciesId === 0) {
                     CoralSpeciesServices.create(values).then(() => {
-                        reload();
-                        onClose();
+                        AreaServices.addAreaToSpecies(values.coralSpeciesId, coralAreas.map((a:any) => a.value)).then(() => {
+                            reload();
+                            onClose();
+                        });
                     });
                 } else {
                     CoralSpeciesServices.update(values).then(() => {
-                        reload();
-                        onClose();
+                        AreaServices.addAreaToSpecies(values.coralSpeciesId, coralAreas.map((a:any) => a.value)).then(() => {
+                            reload();
+                            onClose();
+                        });
                     });
                 }
             }
         },
-    })
+    });
+
+    const openDialog = () => {
+        onOpen();
+        AreaServices.getBySpecies(coral.coralSpeciesId).then((areas) => {
+            setCoralAreas(areas.data.map((a: any) => ({
+                label: a.areaName,
+                value: a.areaId
+            })));
+        });
+    }
+
     return (
         <>
             <IconButton aria-label={'edit'} variant={'solid'} icon={coral ? <EditIcon/> : <AddIcon/>}
-                        onClick={onOpen}></IconButton>
+                        onClick={openDialog}></IconButton>
             <Modal isOpen={isOpen} onClose={onClose} size={'xl'} scrollBehavior={'inside'} closeOnOverlayClick={false}>
                 <ModalOverlay/>
                 <ModalContent>
@@ -197,6 +223,22 @@ function CoralForm({coral, genus, reload}: { coral?: any, genus: any[], reload: 
                                     <FormErrorMessage>
                                         {formik.errors?.parentId}
                                     </FormErrorMessage>
+                                </FormControl>
+                                <FormControl id="tags">
+                                    <FormLabel>Areas</FormLabel>
+                                    <MultiSelect
+                                        isMulti
+                                        value={coralAreas}
+                                        onChange={(e: any) => {
+                                            setCoralAreas(e)
+                                        }}
+                                        closeMenuOnSelect={false}
+                                        selectedOptionStyle="check"
+                                        hideSelectedOptions={false}
+                                        menuPortalTarget={document.body}
+                                        styles={{menuPortal: base => ({...base, zIndex: 10000})}}
+                                        options={areas.map((a: any) => ({label: a.areaName, value: a.areaId}))}
+                                    />
                                 </FormControl>
                                 <FormControl id="characters">
                                     <FormLabel>Characters</FormLabel>

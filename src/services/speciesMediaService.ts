@@ -12,6 +12,11 @@ const SpeciesMediaServices = {
     getByAuthor: (id: any) => {
         return http.get(apiUrl + 'GetAllSpeciesMediasByUser?id=' + id)
     },
+
+    getPaging: (page: number) => {
+        return http.get(apiUrl + 'GetSpeciesMediasWithPaging?page=' + page)
+    },
+
     getBySpecies: (id: any) => {
         return http.get(apiUrl + 'GetAllApprovedSpeciesMediasByCoral?coralId=' + id)
     },

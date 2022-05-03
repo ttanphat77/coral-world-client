@@ -7,7 +7,7 @@ const ArticleServices = {
         return http.get(apiUrl + 'articles')
     },
     getPublished: () => {
-        return http.get(apiUrl + 'published')
+        return http.get(apiUrl + 'GetPublishedArticles')
     },
     get: (id: any) => {
         return http.get(apiUrl + id)
