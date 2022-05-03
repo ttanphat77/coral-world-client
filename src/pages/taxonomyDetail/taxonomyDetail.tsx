@@ -145,8 +145,8 @@ export default function TaxonomyDetail() {
 function MediaCarousel({media}: { media: any[] }) {
     const images = media.map((m: any) => {
         return {
-            original: m.mediaURL,
-            thumbnail: m.mediaURL,
+            original: 'https://images.weserv.nl/?url=' + m.mediaURL,
+            thumbnail: 'https://images.weserv.nl/?url=' + m.mediaURL,
             description: m.caption,
         }
     });

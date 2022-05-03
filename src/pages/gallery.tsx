@@ -77,7 +77,7 @@ function Media({media, species}: { media: any, species: any[] }) {
                         cursor={'pointer'}
                         boxSize={'100%'}
                         objectFit={'cover'}
-                        src={media?.mediaURL}/>
+                        src={'https://images.weserv.nl/?url=' + media?.mediaURL}/>
                 </Box>
             </AspectRatio>
             <Text fontSize={'sm'}><em>{media.caption}</em></Text>
@@ -96,7 +96,7 @@ function Media({media, species}: { media: any, species: any[] }) {
                                         <Image
                                             boxSize={'100%'}
                                             objectFit={'contain'}
-                                            src={media.mediaURL}/>
+                                            src={'https://images.weserv.nl/?url=' + media.mediaURL}/>
                             </Box>
                             <Box>
                                 <Stack>
