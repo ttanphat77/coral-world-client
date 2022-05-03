@@ -1,6 +1,7 @@
 import React, {useState, useContext, createContext, useEffect} from "react";
 import http from '../http-common'
 import {useNavigate} from "react-router-dom";
+import AccountServices from "../services/accountServices";
 
 const authContext = createContext();
 const apiUrl = process.env.REACT_APP_API_URL + '/Login';
@@ -31,12 +32,26 @@ function useProvideAuth() {
             })
     }
 
-    const signup = (email, password) => {
-        http.post(apiUrl + '/Register', {email, password})
+    const refreshUser = (user) => {
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    const signup = (account) => {
+        http.post(apiUrl + '/Register', {email: account.email, password: account.password})
             .then(res => {
-                setUser(res.data);
-                localStorage.setItem('user', JSON.stringify(res.data));
-                return res.data;
+                AccountServices.create(account)
+                    .then(res => {
+                        http.post(apiUrl + '/Login', {email: account.email, password: account.password})
+                            .then(res => {
+                                setUser(res.data);
+                                localStorage.setItem('user', JSON.stringify(res.data));
+                                navigate('/', {replace: true});
+                                return user
+                            })
+                            .catch(err => {
+                            })
+                    })
             })
             .catch(err => {
                 return err;
@@ -65,6 +80,7 @@ function useProvideAuth() {
         signup,
         signout,
         isAuthenticated,
+        refreshUser,
     }
 
 }

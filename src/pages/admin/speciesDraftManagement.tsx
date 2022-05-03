@@ -72,7 +72,7 @@ export default function SpeciesDraftManagement() {
         d.species = species.find((s: any) => s.coralSpeciesId == d.coralSpeciesId);
         d.account = users.find((u: any) => u.accountId == d.author);
         return {
-            name: d.species ? d.species.scientificName + ' (' + d.species.authorCitation + ')' : '',
+            name: d.species ? d.species.scientificName : '',
             author: d.account ? d.account.firstName + ' ' + (d.account.lastName ? d.account.lastName : '') : '',
             status: draftStatus.find((s: any) => s.value == d.status)?.label,
             date: d.createdTime,
@@ -84,11 +84,7 @@ export default function SpeciesDraftManagement() {
         () => [
             {
                 Header: 'Species',
-                accessor: 'draft',
-                Cell: (props: any) =>
-                    <Link as={RouterLink} to={'/taxonomy/' + props.value?.species?.coralSpeciesId} target={'_blank'}>
-                        {props.value?.species?.scientificName} ({props.value?.species?.authorCitation}) <ExternalLinkIcon mx='2px'/>
-                    </Link>
+                accessor: 'name',
             },
             {
                 Header: 'Author',

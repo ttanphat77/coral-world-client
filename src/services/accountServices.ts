@@ -9,6 +9,10 @@ const AccountServices = {
     get: (id: any) => {
         return http.get(apiUrl + id)
     },
+    changeRole: (data: any) => {
+        return http.put(apiUrl + 'SwitchAccountRole', data)
+    },
+
     create: (data: any) => {
         return http.post(apiUrl, data)
     },

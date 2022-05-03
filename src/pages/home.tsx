@@ -217,13 +217,10 @@ export const BlogAuthor: React.FC<BlogAuthorProps> = (props) => {
 const BlogTags: React.FC<IBlogTags> = (props) => {
     return (
         <HStack spacing={2} marginTop={props.marginTop}>
-            {props.tags.map((tag) => {
-                return (
+            {props.tags.map((tag) => tag != '' &&
                     <Tag size={'md'} variant="solid" key={tag}>
                         {tag}
-                    </Tag>
-                );
-            })}
+                    </Tag>)}
         </HStack>
     );
 };

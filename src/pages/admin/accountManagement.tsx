@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from "react";
 import {
-    Badge, Button,
-    Container, FormControl, FormErrorMessage, FormLabel,
+    Avatar,
+    Badge, Button, Center,
+    Container, Flex, FormControl, FormErrorMessage, FormLabel,
     Heading,
     HStack,
     IconButton, Input,
     Modal, ModalBody, ModalCloseButton,
     ModalContent, ModalFooter, ModalHeader,
-    ModalOverlay, Select, Stack, Text, Textarea,
+    ModalOverlay, Select, SimpleGrid, Spacer, Stack, Text, Textarea,
     useDisclosure,
 } from "@chakra-ui/react";
 import Datatable, {OptionFilter} from "../../components/datatable";
@@ -41,11 +42,11 @@ export default function AccountManagement() {
             name: acc.firstName + " " + (acc.lastName ? acc.lastName : ""),
             email: acc.email,
             role: ROLES.find((r: any) => r.value == acc.role)?.label,
-            date: acc.createdTime
+            date: acc.createdTime,
+            account: acc
         }})
 
-    const columns = React.useMemo(
-        () => [
+    const columns = [
             {
                 Header: 'Name',
                 accessor: 'name' as const,
@@ -70,12 +71,10 @@ export default function AccountManagement() {
                 id: 'edit-button',
                 Cell: ({row}: { row: any }) =>
                     <HStack spacing={2}>
-                        <CoralForm coral={row.original.coral} reload={load}/>
+                        <CoralForm account={row.original.account} reload={load}/>
                     </HStack>,
             },
-        ],
-        [],
-    ) as any
+        ] as any
 
     const sortBy = React.useMemo(
         () => [
@@ -90,88 +89,59 @@ export default function AccountManagement() {
     return (
         <Container maxW={"container.xl"} p={2}>
             <Heading as='h2' size='xl'>
-                Account <CoralForm reload={load}/>
+                Account
             </Heading>
             <Datatable data={data} columns={columns} sortBy={sortBy}/>
         </Container>
     );
 }
 
-const validationSchema = Yup.object({
-    scientificName: Yup.string()
-        .required('Scientific name is required'),
-    authorCitation: Yup.string()
-        .required('Author citation is required'),
-});
-
-function CoralForm({coral, reload}: { coral?: any, reload: () => void }) {
+function CoralForm({account, reload}: { account: any, reload: () => void }) {
 
     const {isOpen, onOpen, onClose} = useDisclosure();
-    const formik = useFormik({
-        initialValues: {
-            coralGenusId: coral ? coral.coralGenusId : 0,
-            scientificName: coral && coral.scientificName ? coral.scientificName : '',
-            authorCitation: coral && coral.authorCitation ? coral.authorCitation : '',
-        },
-        validationSchema,
-        onSubmit: (values) => {
-            if (formik.isValid) {
-                if(values.coralGenusId === 0) {
-                    CoralGenusServices.create(values).then(() => {
-                        reload();
-                        onClose();
-                    });
-                } else {
-                    CoralGenusServices.update(values).then(() => {
-                        reload();
-                        onClose();
-                    });
-                }
-            }
-        },
-    })
+    const [role, setRole] = useState(account.role);
+
+    const onSubmit = () => {
+        account.role = role;
+        AccountServices.changeRole(account).then(() => {
+            reload();
+            onClose();
+        });
+    };
     return (
         <>
-            <IconButton aria-label={'edit'} variant={'solid'} icon={coral ? <EditIcon/> :  <AddIcon/>} onClick={onOpen}></IconButton>
-            <Modal isOpen={isOpen} onClose={onClose} size={'xl'} scrollBehavior={'inside'} closeOnOverlayClick={false}>
+            <IconButton aria-label={'edit'} variant={'solid'} icon={<EditIcon/>} onClick={onOpen}></IconButton>
+            <Modal isOpen={isOpen} onClose={onClose} size={'sm'} scrollBehavior={'inside'} closeOnOverlayClick={false}>
                 <ModalOverlay/>
                 <ModalContent>
                     <ModalHeader>
-                        { coral ? 'Edit coral genus' : 'New coral genus'}
+                        User details
                     </ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
-                        <form>
-                            <Stack spacing={4} mt={4}>
-                                <FormControl id="scientificName" isRequired
-                                             isInvalid={Boolean(formik.touched?.scientificName && formik.errors?.scientificName)}>
-                                    <FormLabel htmlFor="scientificName">Scientific name</FormLabel>
-                                    <Input id="scientificName" name="scientificName"
-                                           value={formik.values.scientificName}
-                                           onChange={formik.handleChange}
-                                           onBlur={formik.handleBlur}
-                                           placeholder={'Enter scientific name'}/>
-                                    <FormErrorMessage>
-                                        {formik.errors?.scientificName}
-                                    </FormErrorMessage>
-                                </FormControl>
-                                <FormControl id="authorCitation" isRequired
-                                             isInvalid={Boolean(formik.touched?.authorCitation && formik.errors?.authorCitation)}>
-                                    <FormLabel htmlFor="authorCitation">Author citation</FormLabel>
-                                    <Input id="authorCitation" name="authorCitation"
-                                           value={formik.values.authorCitation}
-                                           onChange={formik.handleChange}
-                                           onBlur={formik.handleBlur}
-                                           placeholder={'Enter author citation'}/>
-                                    <FormErrorMessage>
-                                        {formik.errors?.authorCitation}
-                                    </FormErrorMessage>
-                                </FormControl>
-                            </Stack>
-                        </form>
+                        <Stack spacing={2} mt={4}>
+                            <Center>
+                                <Avatar
+                                    size={'xl'}
+                                    name={account?.firstName + ' ' + account?.lastName}
+                                    src={account?.avatar}
+                                />
+                            </Center>
+                            <Center>
+                                <Text fontSize='3xl'>{account.firstName + ' ' + (account.lastName ? account.lastName : '')}</Text>
+                            </Center>
+                            <Center>
+                                <Text fontSize='xl'>{account.email}</Text>
+                            </Center>
+                            <Select onChange={(e) => setRole(e.target.value)} value={role}>
+                                <option value='1'>User</option>
+                                <option value='2'>Admin</option>
+                                <option value='3'>Researcher</option>
+                            </Select>
+                        </Stack>
                     </ModalBody>
                     <ModalFooter>
-                        <Button colorScheme='blue' onClick={() => formik.handleSubmit()}>
+                        <Button colorScheme='blue' onClick={onSubmit}>
                             Save
                         </Button>
                     </ModalFooter>

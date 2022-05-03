@@ -2,7 +2,7 @@ import GoogleMapReact from "google-map-react";
 import * as React from "react";
 import {
     Circle, Flex, Icon, Link, Popover, PopoverArrow,
-    PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Spacer
+    PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, Spacer, Stack
 } from "@chakra-ui/react";
 import {FaMapMarker} from "react-icons/fa";
 import {useEffect} from "react";
@@ -12,7 +12,7 @@ import { Link as RouterLink} from "react-router-dom";
 
 export default function CoralMap() {
     const MAP_OPTIONS = {
-        scrollwheel: true,
+        // scrollwheel: true,
     };
     const [areas, setAreas] = React.useState<any[]>([]);
 
@@ -64,7 +64,7 @@ const MapMarker = (props: any) => {
 
     return (
         <div>
-            <Popover trigger={'hover'}>
+            <Popover>
                 <PopoverTrigger>
                     <Icon as={FaMapMarker} h={'40px'} w={'40px'} color='#005A80' cursor={'pointer'}
                           transform={'translate(-20px, -40px)'}
@@ -82,12 +82,13 @@ const MapMarker = (props: any) => {
                                 </PopoverTrigger>
                                 {
                                     props.area?.coralSpecies?.length > 0 &&
-                                    <PopoverContent maxW={150} maxH={300}>
+                                    <PopoverContent maxW={200} maxH={300} overflow={'auto'}>
                                         <PopoverArrow />
                                         <PopoverBody>
-                                            {props.area?.coralSpecies.map((species: any) =>
-                                                <Link as={RouterLink} to={'/taxonomy/' + species.coralSpeciesId}>{species.scientificName}</Link>)
-                                            }
+                                            <Stack>
+                                                {props.area?.coralSpecies.map((species: any) =>
+                                                    <Link as={RouterLink} to={'/taxonomy/' + species.coralSpeciesId}>{species.scientificName}</Link>)
+                                                }</Stack>
                                         </PopoverBody>
                                     </PopoverContent>
                                 }

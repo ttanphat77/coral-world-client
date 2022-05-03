@@ -53,6 +53,7 @@ export default function ArticleView() {
 
     const navigateArticle = (id: string) => {
         navigate(`/articles/${id}`);
+        window.scrollTo(0, 0);
         ArticleServices.get(id).then(art => {
             setArticle(art.data);
             AccountServices.get(art.data.author).then(aut => {
@@ -68,6 +69,7 @@ export default function ArticleView() {
                     {
                         coralTags.map((tag: any) => {
                             return (
+                                tag.tagId != 1 &&
                                 <Tag key={tag.tagId}>
                                     {tag.tagName}
                                 </Tag>
@@ -190,13 +192,10 @@ const BlogAuthor: React.FC<BlogAuthorProps> = (props) => {
 const BlogTags: React.FC<IBlogTags> = (props) => {
     return (
         <HStack spacing={2} marginTop={props.marginTop}>
-            {props.tags.map((tag) => {
-                return (
+            {props.tags.map((tag) => tag != '' &&
                     <Tag size={'md'} variant="solid" key={tag}>
                         {tag}
-                    </Tag>
-                );
-            })}
+                    </Tag>)}
         </HStack>
     );
 };

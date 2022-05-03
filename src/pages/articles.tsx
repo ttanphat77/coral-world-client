@@ -90,9 +90,8 @@ export default function Articles() {
                                             <Spacer></Spacer>
                                             <HStack spacing={2}>
                                                 {
-                                                    article.tags.split(',').map((tag: string) => {
-                                                        return <Tag>{tag}</Tag>
-                                                    })
+                                                    article.tags.split(',').map((tag: string) => tag != '' && <Tag>{tag}</Tag>
+                                                    )
                                                 }
                                             </HStack>
                                         </Flex>

@@ -15,30 +15,35 @@ import {Form, useFormik} from "formik";
 import {Select as MultiSelect} from "chakra-react-select";
 import CoralSpeciesServices from "../services/coralSpeciesServices";
 import * as Yup from "yup";
+import AccountServices from "../services/accountServices";
 
 const validationSchema = Yup.object({
-    scientificName: Yup.string()
-        .required('Scientific name is required'),
-    parentId: Yup.number()
-        .required('Genus is required'),
-    authorCitation: Yup.string()
-        .required('Author citation is required'),
+    firstName: Yup.string()
+        .required('First name is required'),
 });
 
 export default function Profile() {
+    const [loading, setLoading] = React.useState(false);
     const user = useAuth().user;
+    const auth = useAuth();
     const formik = useFormik({
         initialValues: {
-            firstName: user.account.firstName,
-            lastName: user.account.lastName,
-            email: user.account.email,
-            accountId: user.account.accountId,
-            role: user.account.role,
-            password: user.account.password,
-            avatar: user.account.avatar,
+            firstName: user?.account.firstName,
+            lastName: user?.account.lastName,
+            email: user?.account.email,
+            accountId: user?.account.accountId,
+            role: user?.account.role,
+            password: user?.account.password,
+            avatar: user?.account.avatar,
         },
         validationSchema,
         onSubmit: (values) => {
+            setLoading(true);
+            AccountServices.update(values).then(() => {
+                setLoading(false);
+                user.account = values
+                auth.refreshUser(user)
+            });
         },
     });
 
@@ -63,15 +68,16 @@ export default function Profile() {
                     <Text fontSize='2xl'>ADMIN</Text>
                     }
                     { user?.account?.role == 3 &&
-                    <Text fontSize='2xl'>Reseacher</Text>
+                    <Text fontSize='2xl'>Researcher</Text>
                     }
                 </Center>
-                <form>
+                <form onSubmit={formik.handleSubmit}>
                     <Flex>
                         <SimpleGrid columns={2} spacing={4} mt={4} w={'100%'}>
                             <FormControl id="firstName" isRequired>
                                 <FormLabel htmlFor="firstName">First name</FormLabel>
                                 <Input id="firstName" name="firstName" value={formik.values.firstName}
+                                       onChange={formik.handleChange}
                                        placeholder={'Enter first name'}/>
                                 <FormErrorMessage>
                                 </FormErrorMessage>
@@ -79,6 +85,7 @@ export default function Profile() {
                             <FormControl id="lastName">
                                 <FormLabel htmlFor="lastName">Last name</FormLabel>
                                 <Input id="lastName" name="lastName" value={formik.values.lastName}
+                                       onChange={formik.handleChange}
                                        placeholder={'Enter last name'}/>
                                 <FormErrorMessage>
                                 </FormErrorMessage>
@@ -86,7 +93,8 @@ export default function Profile() {
                         </SimpleGrid>
                         <Flex flexDirection={'column'} ml={2}>
                             <Spacer/>
-                            <Button>Save</Button>
+                            <Button colorScheme={'blue'} isLoading={loading}
+                            type={'submit'}>Save</Button>
                         </Flex>
                     </Flex>
                 </form>

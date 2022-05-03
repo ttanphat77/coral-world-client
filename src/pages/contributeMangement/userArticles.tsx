@@ -97,7 +97,7 @@ export default function UserArticles() {
             Cell: ({row}: { row: any }) =>
                 <HStack spacing={2}>
                     {row.values.tags.map((tag: string) => (
-                        <Tag>{tag}</Tag>
+                        tag != '' && <Tag>{tag}</Tag>
                     ))}
                 </HStack>,
         },

@@ -59,7 +59,7 @@ export default function MediaContributeTable() {
         const draftSpecies = species.find(s => s.coralSpeciesId === m.coralSpeciesId)
         m.species = draftSpecies ? draftSpecies : null;
         return {
-            url: m.mediaURL,
+            url: 'https://images.weserv.nl/?url=' + m.mediaURL,
             species: draftSpecies ? draftSpecies.scientificName  + ' (' + draftSpecies.authorCitation + ')': '',
             status: mediaStatus.find(s => s.value == m.status)?.label,
             date: m.createdTime,
@@ -170,7 +170,7 @@ function MediaViewer({media}: { media: any }) {
                                     height={'100%'}
                                     width={'100%'}
                                     objectFit={'contain'}
-                                    src={media?.mediaURL}/>
+                                    src={'https://images.weserv.nl/?url=' + media?.mediaURL}/>
                             </Box>
                             <Box>
                                 <form onSubmit={formik.handleSubmit}>

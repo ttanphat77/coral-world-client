@@ -182,7 +182,7 @@ function ArticleView({article, reload}: { article: any, reload: () => void }) {
                             <HStack spacing={2}>
                                 {
                                     article.tags.split(',').map((t: any) =>
-                                        <Tag>{t}</Tag>
+                                        t != '' && <Tag>{t}</Tag>
                                     )
                                 }
                             </HStack>

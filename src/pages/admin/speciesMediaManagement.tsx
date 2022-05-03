@@ -63,8 +63,8 @@ export default function SpeciesMediaManagement() {
         d.species = species.find((s: any) => s.coralSpeciesId == d.coralSpeciesId);
         d.account = users.find((u: any) => u.accountId == d.createdBy);
         return {
-            url: d.mediaURL,
-            name: d.species ? d.species.scientificName + ' (' + d.species.authorCitation + ')' : '',
+            url: 'https://images.weserv.nl/?url=' + d.mediaURL,
+            name: d.species ? d.species.scientificName : '',
             author: d.account ? d.account.firstName + ' ' + (d.account.lastName ? d.account.lastName : '') : '',
             status: mediaStatus.find((s: any) => s.value == d.status)?.label,
             date: d.createdTime,
@@ -88,11 +88,7 @@ export default function SpeciesMediaManagement() {
             },
             {
                 Header: 'Species',
-                accessor: 'media',
-                Cell: (props: any) =>
-                    <Link as={RouterLink} to={'/taxonomy/' + props.value?.species?.coralSpeciesId} target={'_blank'}>
-                        {props.value?.species?.scientificName} ({props.value?.species?.authorCitation}) <ExternalLinkIcon mx='2px'/>
-                    </Link>
+                accessor: 'name',
             },
             {
                 Header: 'Author',
@@ -180,7 +176,7 @@ function MediaViewer({media, reload = () => {}}: { media: any, reload?: () => vo
                                 <Image
                                     boxSize={'100%'}
                                     objectFit={'contain'}
-                                    src={media.mediaURL}/>
+                                    src={'https://images.weserv.nl/?url=' + media.mediaURL}/>
                             </Box>
                             <Box>
                                 <Stack>
