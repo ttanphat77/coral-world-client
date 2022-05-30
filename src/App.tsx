@@ -2,7 +2,6 @@ import * as React from "react"
 import Header from "./components/header"
 import Home from "./pages/home"
 import Taxonomy from "./pages/taxonomy"
-import About from "./pages/about";
 import {Routes, BrowserRouter, Route, Outlet, Navigate} from "react-router-dom";
 import Signin from "./pages/authenticate/signin";
 import Signup from "./pages/authenticate/signup";
@@ -31,6 +30,10 @@ import ArticleManagement from "./pages/admin/articleManagement";
 import Gallery from "./pages/gallery";
 import Profile from "./pages/profile";
 import AccountManagement from "./pages/admin/accountManagement";
+import GalleryWidget from "./components/galleryWidget";
+import io from "socket.io-client";
+
+export const socket = io("http://localhost:5000");
 
 export const App = () => {
     const auth = useAuth();
@@ -38,49 +41,49 @@ export const App = () => {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    <Route element={<Layout />}>
-                        <Route path="/" element={<Home />} />
-                        <Route path="editor" element={<ArticleEditor />} />
+                    <Route element={<Layout/>}>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="editor" element={<ArticleEditor/>}/>
                         <Route path="articles">
-                            <Route index element={<Articles />} />
-                            <Route path=":id" element={<ArticleView />} />
+                            <Route index element={<Articles/>}/>
+                            <Route path=":id" element={<ArticleView/>}/>
                         </Route>
                         <Route path="taxonomy">
-                            <Route index element={<Taxonomy />} />
-                            <Route path=":id" element={<TaxonomyDetail />} />
+                            <Route index element={<Taxonomy/>}/>
+                            <Route path=":id" element={<TaxonomyDetail/>}/>
                         </Route>
-                        <Route path="gallery" element={<Gallery />} />
+                        <Route path="gallery" element={<Gallery/>}/>
                         <Route path="auth" element={<RequireUnauth/>}>
-                            <Route path="signin" element={<Signin />} />
-                            <Route path="signup" element={<Signup />} />
+                            <Route path="signin" element={<Signin/>}/>
+                            <Route path="signup" element={<Signup/>}/>
                         </Route>
-                        <Route path="user" element={<RequireUserAuth />}>
+                        <Route path="user" element={<RequireUserAuth/>}>
                             <Route path="gallery">
-                                <Route index element={<UserGallery />} />
-                                <Route path=":id" element={<Album />} />
+                                <Route index element={<UserGallery/>}/>
+                                <Route path=":id" element={<Album/>}/>
                             </Route>
-                            <Route path="profile" element={<Profile />} />
-                            <Route path="contribute" element={<UserContribution />} />
+                            <Route path="profile" element={<Profile/>}/>
+                            <Route path="contribute" element={<UserContribution/>}/>
                         </Route>
-                        <Route path="researcher" element={<RequireResearcherAuth />}>
-                            <Route path="contribute" element={<UserContribution />} />
-                            <Route path="todo" element={<Todofactsheet />} />
-                            <Route path="image-label" element={<ImageLabeling />} />
+                        <Route path="researcher" element={<RequireResearcherAuth/>}>
+                            <Route path="contribute" element={<UserContribution/>}/>
+                            <Route path="todo" element={<Todofactsheet/>}/>
+                            <Route path="image-label" element={<ImageLabeling/>}/>
                             <Route path="articles">
-                                <Route index element={<UserArticles />} />
-                                <Route path=":id" element={<ArticleEditor />} />
+                                <Route index element={<UserArticles/>}/>
+                                <Route path=":id" element={<ArticleEditor/>}/>
                             </Route>
                         </Route>
-                        <Route path="admin" element={<RequireAdminAuth />}>
-                            <Route index element={<Welcome />} />
-                            <Route path="species" element={<SpeciesManagement />} />
-                            <Route path="genus" element={<GenusManagement />} />
-                            <Route path="divingSession" element={<DivingSessionManagement />} />
-                            <Route path="draft" element={<SpeciesDraftManagement />} />
-                            <Route path="species-media" element={<SpeciesMediaManagement />} />
-                            <Route path="label-image" element={<LabelImageManagement />} />
-                            <Route path="articles" element={<ArticleManagement />} />
-                            <Route path="account" element={<AccountManagement />} />
+                        <Route path="admin" element={<RequireAdminAuth/>}>
+                            <Route index element={<Welcome/>}/>
+                            <Route path="species" element={<SpeciesManagement/>}/>
+                            <Route path="genus" element={<GenusManagement/>}/>
+                            <Route path="divingSession" element={<DivingSessionManagement/>}/>
+                            <Route path="draft" element={<SpeciesDraftManagement/>}/>
+                            <Route path="species-media" element={<SpeciesMediaManagement/>}/>
+                            <Route path="label-image" element={<LabelImageManagement/>}/>
+                            <Route path="articles" element={<ArticleManagement/>}/>
+                            <Route path="account" element={<AccountManagement/>}/>
                         </Route>
                     </Route>
                 </Routes>
@@ -97,6 +100,7 @@ function Layout() {
             <div style={{margin: '59px 0 0 0'}}>
                 <Outlet/>
             </div>
+            <GalleryWidget/>
         </div>
     )
 }
@@ -106,21 +110,25 @@ function RequireUserAuth(props: any) {
     if (!auth.isAuthenticated()) {
         return <Navigate to={'/auth/signin'}/>
     }
-    return <Outlet />
+    return <Outlet/>
 }
 
 function RequireResearcherAuth(props: any) {
     const auth = useAuth();
     if (!auth.isAuthenticated()) {
         return <Navigate to={'/auth/signin'}/>
+    } else if (auth?.user?.account.role != 3) {
+        return <Navigate to={'/'}/>
     }
-    return <Outlet />
+    return <Outlet/>
 }
 
 function RequireAdminAuth(props: any) {
     const auth = useAuth();
     if (!auth.isAuthenticated()) {
         return <Navigate to={'/auth/signin'}/>
+    } else if (auth?.user?.account.role != 2) {
+        return <Navigate to={'/'}/>
     }
     return (
         <SimpleSidebar>
@@ -135,5 +143,5 @@ function RequireUnauth() {
     if (auth.user) {
         return <Navigate to={'/'}/>
     }
-    return <Outlet />
+    return <Outlet/>
 }

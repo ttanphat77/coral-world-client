@@ -11,8 +11,11 @@ import UserMediaServices from "../../services/userMediaServices";
 import storage from "../../services/firebaseServices";
 import video_file from "../../assets/video_file.png";
 import {Simulate} from "react-dom/test-utils";
+import {useDispatch, useSelector} from "react-redux";
+import {addFile, updateFileStatus, updateFileID} from "../../services/uploaderSlice";
 
 export default function Album() {
+    const dispatch = useDispatch();
 
     const [album, setAlbum] = React.useState<any>(null);
     const [medias, setMedias] = React.useState<any[]>([]);
@@ -52,11 +55,26 @@ export default function Album() {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const name = file.name + '_' + new Date().getTime();
-                storage.ref(`usermedia/${album.albumName}/${name}`).put(file)
+                dispatch(addFile({
+                    albumName: album.albumName,
+                    albumId: album.albumId,
+                    isImage: file.type.includes('image'),
+                    userMediaId: name,
+                    name: file.name,
+                    status: 0,
+                    progress: 0,
+                }));
+                storage.ref(`usermedia/${album.albumId}/${name}`).put(file)
                     .on('state_changed', (snapshot: any) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        dispatch(updateFileStatus({
+                            albumId: album.albumId,
+                            userMediaId: name,
+                            status: 0,
+                            progress: progress,
+                        }));
                         // Observe state change events such as progress, pause, and resume
                         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                        // const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         // console.log('Upload is ' + progress + '% done');
                         // switch (snapshot.state) {
                         //     case 'paused': // or 'paused'
@@ -71,16 +89,26 @@ export default function Album() {
                     }, () => {
                         // Handle successful uploads on complete
                         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                        storage.ref(`usermedia/${album.albumName}/${name}`).getDownloadURL().then((url: any) => {
+                        storage.ref(`usermedia/${album.albumId}/${name}`).getDownloadURL().then((url: any) => {
                             UserMediaServices.create({
                                 albumId: album.albumId,
                                 isImage: file.type.includes('image'),
-                                caption: "",
+                                userMediaName: file.name,
                                 mediaURL: url,
                             }).then((res: any) => {
                                 UserMediaServices.getByAlbum(id).then((res: any) => {
                                     res.data.find((media: any) => {
                                         if (media.mediaURL === url) {
+                                            dispatch(updateFileID({
+                                                albumId: album.albumId,
+                                                userMediaId: media.userMediaId,
+                                                name: name,
+                                            }));
+                                            dispatch(updateFileStatus({
+                                                albumId: album.albumId,
+                                                userMediaId: name,
+                                                status: 1,
+                                            }));
                                             UserMediaServices.triggerDetect(media.userMediaId);
                                         }
                                     });

@@ -46,6 +46,7 @@ const articleStatus = [
 ];
 
 export default function UserArticles() {
+    const user = useAuth().user;
 
     const [articles, setArticles] = React.useState<any[]>([]);
     const [users, setUsers] = React.useState<any[]>([]);
@@ -59,7 +60,7 @@ export default function UserArticles() {
 
 
     const loadArticles = () => {
-        ArticleServices.getAll().then(res => {
+        ArticleServices.getByAuthor(user?.account.accountId).then(res => {
             setArticles(res.data);
         });
     }
